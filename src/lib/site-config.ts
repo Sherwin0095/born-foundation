@@ -6,7 +6,7 @@
 
 export const SITE_CONFIG = {
   name: "Born Foundation",
-  legalName: "Born Foundation Non-Governmental Organisation",
+  legalName: "Born Foundation - Karnataka Governmental Organisation",
   tagline: "Caring for Every Child's Tomorrow",
   description:
     "An organisation dedicated to the holistic care, wellbeing, development, and protection of vulnerable children across community centres in India.",
