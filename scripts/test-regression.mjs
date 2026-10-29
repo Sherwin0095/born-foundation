@@ -68,7 +68,7 @@ async function runTests() {
   console.log("\n--- 2. Checking Public Routes Status Codes ---");
   const routes = [
     { path: "/", title: "Every Child Deserves a" },
-    { path: "/about", title: "About Born Foundation" },
+    { path: "/about", title: "About BORN FOUNDATION" },
     { path: "/programmes", title: "Our Programmes" },
     { path: "/impact", title: "Impact &amp; Transparency" },
     { path: "/stories", title: "Stories &amp; Updates" },
