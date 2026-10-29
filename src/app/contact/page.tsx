@@ -23,6 +23,7 @@ import {
   Button,
 } from "@/components/ui";
 import { saveEnquiry } from "@/lib/data-store";
+import { SITE_CONFIG } from "@/lib/site-config";
 import type { ContactEnquiry } from "@/lib/types";
 
 export default function ContactPage() {
@@ -167,9 +168,9 @@ export default function ContactPage() {
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-main-text text-sm">Registered Secretariat</h3>
-                    <p className="text-secondary-text text-sm">
-                      National Operations Secretariat, India
+                    <h3 className="font-semibold text-main-text text-sm">Registered Secretariat & Office</h3>
+                    <p className="text-secondary-text text-sm leading-relaxed">
+                      {SITE_CONFIG.contact.address}
                     </p>
                   </div>
                 </Card>

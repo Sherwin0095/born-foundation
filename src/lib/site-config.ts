@@ -25,7 +25,7 @@ export const SITE_CONFIG = {
     email: "info@bornfoundation.org",
     safeguardingEmail: "safeguarding@bornfoundation.org",
     phone: "+91 11 2345 6789", // Placeholder for official secretariat phone
-    address: "National Operations Secretariat, New Delhi, India",
+    address: "No. 6/2 Langford Road 4th Cross, Shanthinagar, Bangalore, Karnataka 560027",
     workingHours: "Monday to Friday: 9:00 AM – 6:00 PM IST",
   },
 

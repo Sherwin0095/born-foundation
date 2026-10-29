@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Heart, Mail, MapPin, ShieldCheck } from "lucide-react";
 import { FOOTER_NAV } from "@/lib/types";
+import { SITE_CONFIG } from "@/lib/site-config";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -35,9 +36,9 @@ export function Footer() {
                   info@bornfoundation.org
                 </a>
               </div>
-              <div className="flex items-center gap-2.5">
-                <MapPin className="w-4 h-4 text-warm-gold shrink-0" aria-hidden="true" />
-                <span>National Operations Secretariat, India</span>
+              <div className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-warm-gold shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="leading-snug">{SITE_CONFIG.contact.address}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="w-4 h-4 text-warm-gold shrink-0" aria-hidden="true" />
