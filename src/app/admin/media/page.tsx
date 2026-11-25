@@ -1,174 +1,255 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import {
-  Image,
-  Upload,
-  CheckCircle,
-  AlertTriangle,
   Shield,
-  FileCheck,
-  Trash2,
+  CheckCircle,
+  Lock,
+  XCircle,
 } from "lucide-react";
 import { Card, Button, Badge, Input } from "@/components/ui";
-
-interface MediaItem {
-  id: string;
-  filename: string;
-  alt_text: string;
-  caption: string;
-  size: string;
-  status: "approved" | "pending";
-  date: string;
-}
+import { updateMediaApproval, addMediaAsset } from "@/lib/data-store";
+import { MOCK_MEDIA_ASSETS } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
+import { useAuth } from "@/lib/auth-context";
+import type { MediaAsset } from "@/lib/types";
 
 export default function AdminMediaPage() {
-  const [mediaList, setMediaList] = useState<MediaItem[]>([
-    {
-      id: "med-1",
-      filename: "illustrative_classroom_learning.jpg",
-      alt_text: "Children engaged in group interactive tutoring session",
-      caption: "Community center learning hours (Illustrative imagery)",
-      size: "240 KB",
-      status: "approved",
-      date: "2024-05-10",
-    },
-    {
-      id: "med-2",
-      filename: "nutrition_workshop_supplies.jpg",
-      alt_text: "Fresh organic vegetables and meal packs arranged for families",
-      caption: "Ingredients for family balanced diet workshop",
-      size: "310 KB",
-      status: "approved",
-      date: "2024-06-12",
-    },
-    {
-      id: "med-3",
-      filename: "volunteer_induction_group.jpg",
-      alt_text: "Volunteer group participating in safeguarding training",
-      caption: "Safeguarding orientation for new volunteers",
-      size: "450 KB",
-      status: "pending",
-      date: "2024-08-01",
-    },
-  ]);
-
+  const { user, hasRole } = useAuth();
+  const assets = useStoredData<MediaAsset[]>("media_assets", MOCK_MEDIA_ASSETS);
+  const [filter, setFilter] = useState<"all" | "approved" | "pending">("all");
   const [altText, setAltText] = useState("");
   const [caption, setCaption] = useState("");
   const [fileName, setFileName] = useState("");
 
-  const handleSimulatedUpload = (e: React.FormEvent) => {
+  const canApprove = hasRole(["super_admin", "reviewer"]);
+
+  const handleSimulatedRegister = (e: React.FormEvent) => {
     e.preventDefault();
     if (!fileName || !altText) return;
 
-    const newItem: MediaItem = {
-      id: `med-${Date.now()}`,
-      filename: fileName,
-      alt_text: altText,
-      caption: caption || "Safeguarded community activity illustration",
-      size: "185 KB",
-      status: "approved",
-      date: new Date().toISOString().split("T")[0],
-    };
+    addMediaAsset(
+      {
+        id: `med-${Date.now()}`,
+        filename: fileName,
+        original_filename: fileName,
+        mime_type: "image/webp",
+        size_bytes: 0,
+        url: "",
+        alt_text: altText,
+        caption: caption || "Pending safeguarding inspection",
+        has_identifiable_children: true,
+        safeguarding_risk: "medium",
+        exif_stripped: true,
+        approval_status: "pending",
+        uploaded_by: user?.id || "editor-001",
+        is_public: false,
+        review_notes: "Registered into private queue; requires safeguarding review prior to public release.",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      user?.id
+    );
 
-    setMediaList([newItem, ...mediaList]);
     setFileName("");
     setAltText("");
     setCaption("");
   };
 
+  const filteredAssets = assets.filter((a) =>
+    filter === "all" ? true : a.approval_status === filter
+  );
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-          Media Library & Digital Asset Compliance
+          Gallery &amp; Safeguarding Media Approval
         </h1>
         <p className="text-sm text-secondary-text">
-          Upload and audit imagery with mandatory EXIF stripping and child privacy vetting.
+          Workflow: Private Upload → EXIF Strip → Safeguarding Review → Approval → Public Derivative.
         </p>
       </div>
 
-      {/* Mandatory Safeguarding Protocol Notice */}
-      <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-3">
-        <Shield className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+      <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex items-start gap-3">
+        <Shield className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
         <div>
-          <h3 className="font-bold text-sm text-amber-950 mb-1">Child Safeguarding Image Protocol</h3>
+          <h2 className="font-bold text-sm mb-1">Mandatory Child Safeguarding Media Lock</h2>
           <p className="leading-relaxed">
-            All images must be stripped of EXIF, GPS location tags, and camera metadata prior to public use.
-            Under no circumstances may photographs depicting distressed minors, medical vulnerabilities, or
-            identifiable uniforms be uploaded without parental consent and executive safeguarding sign-off.
+            12 photographs from the supplied ZIP contain identifiable children and are held strictly
+            as non-public archive items (`is_public = false`) until verified guardian consent is
+            documented. Only 3 non-identifying EXIF-stripped derivatives are active on the public gallery.
           </p>
         </div>
       </div>
 
-      {/* Upload Box */}
+      {/* Add Private Queue Asset */}
       <Card variant="bordered" padding="lg" className="bg-white">
-        <h2 className="text-base font-bold text-main-text mb-4 flex items-center gap-2">
-          <Upload className="w-4 h-4 text-forest-green" />
-          Add Approved Media Asset
+        <h2 className="text-base font-bold text-main-text mb-4">
+          Register New Private Media Item (Auto-Enters Pending Safeguarding Queue)
         </h2>
-        <form onSubmit={handleSimulatedUpload} className="grid sm:grid-cols-3 gap-4">
+        <form onSubmit={handleSimulatedRegister} className="grid sm:grid-cols-3 gap-4">
           <Input
-            label="File Name / Descriptor"
+            label="Sanitised Slug / Filename"
             required
-            placeholder="e.g. art_workshop_activity.jpg"
+            placeholder="e.g. workshop-supplies.webp"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
           />
           <Input
             label="Accessible Alt Text (Required)"
             required
-            placeholder="Describe visual content for screen-readers..."
+            placeholder="Objective visual description..."
             value={altText}
             onChange={(e) => setAltText(e.target.value)}
           />
           <Input
-            label="Public Caption"
-            placeholder="Context or activity summary"
+            label="Caption"
+            placeholder="Neutral activity context"
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
           />
           <div className="sm:col-span-3 flex justify-end">
             <Button type="submit" variant="primary" size="sm">
-              Register Asset
+              Queue for Safeguarding Review
             </Button>
           </div>
         </form>
       </Card>
 
-      {/* Media Items Table */}
-      <div className="bg-white rounded-xl border border-border overflow-hidden">
+      {/* Filter Pills */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { id: "all", label: `All (${assets.length})` },
+          { id: "approved", label: `Publicly Approved (${assets.filter((a) => a.approval_status === "approved").length})` },
+          { id: "pending", label: `Held Pending Consent (${assets.filter((a) => a.approval_status === "pending").length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setFilter(tab.id as typeof filter)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold cursor-pointer ${
+              filter === tab.id
+                ? "bg-forest-green text-white"
+                : "bg-white border border-border text-main-text hover:bg-soft-sage/50"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-border overflow-x-auto">
         <table className="w-full text-left border-collapse text-sm">
           <thead>
             <tr className="bg-surface-muted border-b border-border text-xs text-secondary-text font-semibold uppercase tracking-wider">
-              <th className="py-3 px-4">Preview & Name</th>
-              <th className="py-3 px-4">Alt Description</th>
-              <th className="py-3 px-4">Safeguarding Status</th>
-              <th className="py-3 px-4 text-right">Size</th>
+              <th className="py-3 px-4">Asset</th>
+              <th className="py-3 px-4">Safeguarding Assessment</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4 text-right">Moderation</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {mediaList.map((item) => (
-              <tr key={item.id} className="hover:bg-surface-muted/50 transition-colors">
-                <td className="py-3.5 px-4 font-semibold text-main-text flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
-                    <Image className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="block truncate max-w-xs">{item.filename}</span>
-                    <span className="text-[11px] text-secondary-text font-normal">{item.caption}</span>
+            {filteredAssets.map((item) => (
+              <tr key={item.id} className="hover:bg-surface-muted/40">
+                <td className="py-3.5 px-4">
+                  <div className="flex items-center gap-3">
+                    {item.is_public && item.url ? (
+                      <Image
+                        src={item.url}
+                        alt={item.alt_text || item.filename}
+                        width={56}
+                        height={40}
+                        className="w-14 h-10 rounded-lg object-cover border border-border shrink-0"
+                      />
+                    ) : (
+                      <div className="w-14 h-10 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
+                        <Lock className="w-4 h-4" aria-hidden="true" />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <span className="font-semibold text-main-text block text-xs sm:text-sm">
+                        {item.filename}
+                      </span>
+                      <span className="text-[11px] text-secondary-text block truncate max-w-xs">
+                        {item.caption}
+                      </span>
+                    </div>
                   </div>
                 </td>
-                <td className="py-3.5 px-4 text-xs text-secondary-text max-w-xs truncate">
-                  {item.alt_text}
+                <td className="py-3.5 px-4 text-xs text-secondary-text max-w-xs">
+                  <span className="font-medium text-main-text block">
+                    {item.has_identifiable_children
+                      ? "Identifiable Minors: Yes (Consent Required)"
+                      : "Non-Identifying / Adult Frame"}
+                  </span>
+                  <span className="block text-[11px]">{item.review_notes}</span>
                 </td>
                 <td className="py-3.5 px-4">
-                  <Badge variant={item.status === "approved" ? "success" : "warning"}>
-                    {item.status}
-                  </Badge>
+                  <div className="space-y-1">
+                    <Badge
+                      variant={
+                        item.approval_status === "approved"
+                          ? "success"
+                          : item.approval_status === "rejected"
+                          ? "danger"
+                          : "warning"
+                      }
+                    >
+                      {item.approval_status}
+                    </Badge>
+                    <span className="block text-[10px] text-secondary-text">
+                      {item.is_public ? "Public Derivative" : "Private Restricted"}
+                    </span>
+                  </div>
                 </td>
-                <td className="py-3.5 px-4 text-right text-xs text-secondary-text">
-                  {item.size}
+                <td className="py-3.5 px-4 text-right">
+                  {canApprove ? (
+                    <div className="flex items-center justify-end gap-2">
+                      {item.is_public ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            updateMediaApproval(
+                              item.id,
+                              "pending",
+                              false,
+                              "Withheld by reviewer back into pending review.",
+                              user?.id
+                            );
+                          }}
+                        >
+                          Unpublish
+                        </Button>
+                      ) : !item.has_identifiable_children ? (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={() => {
+                            updateMediaApproval(
+                              item.id,
+                              "approved",
+                              true,
+                              "Approved non-identifying EXIF-stripped derivative.",
+                              user?.id
+                            );
+                          }}
+                        >
+                          <CheckCircle className="w-3.5 h-3.5 mr-1" />
+                          Approve Public
+                        </Button>
+                      ) : (
+                        <span className="text-[11px] text-amber-800 font-medium flex items-center gap-1">
+                          <XCircle className="w-3.5 h-3.5" aria-hidden="true" />
+                          Blocked (Needs Signed Consent)
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-secondary-text">Reviewer Only</span>
+                  )}
                 </td>
               </tr>
             ))}

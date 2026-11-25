@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "test": "node scripts/test-regression.mjs"
+    "test": "node scripts/test-regression.mjs",
+    "media:process": "node scripts/process-media.mjs",
+    "verify:browser": "node scripts/browser-verify.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

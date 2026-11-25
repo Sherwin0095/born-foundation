@@ -1,0 +1,55 @@
+name: BORN FOUNDATION CI & Regression Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  verify:
+    name: Type-check, Lint, Media Privacy & Production Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Private Media Isolation
+        run: |
+          if [ -d ".private" ]; then
+            echo "ERROR: .private directory must never be committed to Git."
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: TypeScript Type Check
+        run: npm run type-check
+
+      - name: ESLint Check
+        run: npm run lint
+
+      - name: Production Build
+        env:
+          NEXT_PUBLIC_OFFLINE_MODE: "true"
+          NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+        run: npm run build
+
+      - name: Run Automated Route, Security & Media Tests Against Production Server
+        env:
+          NEXT_PUBLIC_OFFLINE_MODE: "true"
+          NEXT_PUBLIC_SITE_URL: "http://localhost:3000"
+        run: |
+          npm run start &
+          SERVER_PID=$!
+          npx wait-on http://localhost:3000 || sleep 5
+          npm test
+          kill $SERVER_PID || true

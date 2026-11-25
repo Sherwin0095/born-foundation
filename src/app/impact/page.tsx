@@ -4,21 +4,22 @@ import {
   BarChart3,
   FileText,
   Shield,
-  Eye,
   CheckCircle2,
-  Calendar,
-  Download,
+  MapPin,
+  Phone,
   AlertCircle,
-  ArrowRight,
+  Lock,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { PageHero, Section, Card, Button, Badge } from "@/components/ui";
+import { PageHero, Section, Card, Badge, Button } from "@/components/ui";
+import { SITE_CONFIG } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Impact & Transparency",
   description:
-    "Explore Born Foundation's commitment to accountability, verified metrics, governance disclosures, and published reports.",
+    "View BORN FOUNDATION's organisational details, supplied registry reference verification statuses, and zero-fabrication transparency policy.",
+  alternates: { canonical: "/impact" },
 };
 
 export default function ImpactPage() {
@@ -28,172 +29,186 @@ export default function ImpactPage() {
       <main id="main-content">
         <PageHero
           title="Impact & Transparency"
-          subtitle="Honest reporting, verified metrics, and uncompromised stewardship in all that we do."
+          subtitle="Clear separation between confirmed facts, supplied registry references awaiting document verification, and future audited reports."
           breadcrumbs={[
             { label: "Home", href: "/" },
             { label: "Impact & Transparency" },
           ]}
         />
 
-        {/* Commitment to Truth */}
+        {/* 1. Zero Fabrication Commitment */}
         <Section background="white">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-2 text-forest-green mb-3">
-              <Shield className="w-5 h-5" />
-              <span className="text-sm font-semibold uppercase tracking-wider">
-                Ethical Standard
+          <div className="max-w-4xl mx-auto space-y-5">
+            <div className="flex items-center gap-2 text-forest-green">
+              <Shield className="w-5 h-5" aria-hidden="true" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Truthful Reporting Standard
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-6">
-              Our Zero-Fabrication Transparency Policy
+            <h2 className="text-3xl md:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+              Zero-Fabrication &amp; Verification Policy
             </h2>
-            <div className="prose text-secondary-text space-y-4 leading-relaxed">
-              <p>
-                In an era where developmental metrics are often inflated or presented without
-                third-party verification, Born Foundation operates on strict disclosure principles.
-                We never estimate speculative impact or project unverified claims.
-              </p>
-              <p>
-                Every metric, rupee allocated, and operational outcome reported on this platform
-                undergoes programmatic auditing and supervisory approval before public disclosure.
-              </p>
-            </div>
+            <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
+              BORN FOUNDATION never presents unverified statistics, estimated beneficiary totals,
+              placeholder financial statements, or unconfirmed regulatory statuses as proven achievements.
+            </p>
+            <p className="text-secondary-text text-base leading-relaxed">
+              Every quantitative figure and compliance certificate published on this website undergoes
+              verification against original official documents before tax-benefit or external accreditation
+              badges are displayed.
+            </p>
           </div>
         </Section>
 
-        {/* Impact Metrics Section */}
+        {/* 2. Organisational & Registry Verification Ledger */}
         <Section background="sage">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-10">
-              <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-                Verified Aggregate Metrics
-              </h3>
-              <p className="text-secondary-text mt-2">
-                Operational data for ongoing verification cycles.
+          <div className="max-w-5xl mx-auto space-y-8">
+            <div className="text-center max-w-2xl mx-auto space-y-2">
+              <h2 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+                Organisational &amp; Registry Information Ledger
+              </h2>
+              <p className="text-sm sm:text-base text-secondary-text">
+                Summary of details supplied in organisational briefings and directory records.
               </p>
             </div>
 
-            {/* Transparent Status Notice */}
-            <div className="bg-white rounded-xl border border-border p-8 text-center max-w-2xl mx-auto shadow-sm">
-              <div className="w-14 h-14 bg-soft-sage text-forest-green rounded-full flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="w-7 h-7" />
-              </div>
-              <h4 className="text-lg font-semibold text-main-text mb-2">
-                Audited Operational Cycle in Progress
-              </h4>
-              <p className="text-secondary-text text-sm leading-relaxed mb-6">
-                Born Foundation is currently compiling and auditing its inaugural programmatic
-                dataset across active educational and nutrition initiatives. Independent verification
-                ensures that data published here is 100% accurate and verifiable.
-              </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-sage text-forest-green text-xs font-medium">
-                <Calendar className="w-3.5 h-3.5" />
-                First comprehensive public audit report scheduled for release at cycle completion
-              </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card variant="bordered" padding="lg" className="bg-white space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-lg text-main-text">Location &amp; Contact</h3>
+                  <Badge variant="default">Supplied Info</Badge>
+                </div>
+                <div className="space-y-3 text-sm text-secondary-text">
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-forest-green shrink-0 mt-1" aria-hidden="true" />
+                    <span>{SITE_CONFIG.contact.address}</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="w-4 h-4 text-forest-green shrink-0" aria-hidden="true" />
+                    <a
+                      href={SITE_CONFIG.contact.phoneHref}
+                      className="font-semibold text-forest-green hover:underline"
+                    >
+                      {SITE_CONFIG.contact.phone}
+                    </a>
+                  </div>
+                  <p className="text-xs italic">{SITE_CONFIG.contact.openingHoursStatus}</p>
+                </div>
+              </Card>
+
+              <Card variant="bordered" padding="lg" className="bg-white space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-lg text-main-text">Registration &amp; Tax Records</h3>
+                  <Badge variant="warning">Verification Pending</Badge>
+                </div>
+                <ul className="space-y-2.5 text-xs sm:text-sm text-secondary-text">
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>
+                      <strong>Supplied Reference:</strong> {SITE_CONFIG.registry.registrationReference}{" "}
+                      ({SITE_CONFIG.registry.registrationStatus})
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{SITE_CONFIG.registry.section12A}</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{SITE_CONFIG.registry.section80G}</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Lock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" aria-hidden="true" />
+                    <span>{SITE_CONFIG.registry.fcraNotice}</span>
+                  </li>
+                </ul>
+              </Card>
             </div>
           </div>
         </Section>
 
-        {/* Public Reports Repository */}
+        {/* 3. Verified Metrics & Documents Status */}
         <Section background="white">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-              <div>
-                <p className="text-muted-terracotta text-sm uppercase tracking-wider font-semibold">
-                  Publications
-                </p>
-                <h3 className="text-2xl md:text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text mt-1">
-                  Annual & Statutory Reports
+          <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-start">
+            <div className="bg-warm-ivory rounded-2xl border border-border p-8 text-center space-y-4">
+              <div className="w-13 h-13 bg-soft-sage text-forest-green rounded-full flex items-center justify-center mx-auto">
+                <BarChart3 className="w-7 h-7" aria-hidden="true" />
+              </div>
+              <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+                Aggregate Impact Statistics
+              </h3>
+              <p className="text-sm text-secondary-text leading-relaxed">
+                No verified beneficiary totals or audited impact ratios are published yet. Metrics
+                will appear here once primary field logs and independent reviews are formally confirmed.
+              </p>
+              <Badge variant="warning">Awaiting Verified Field Data</Badge>
+            </div>
+
+            <div className="bg-surface-muted rounded-2xl border border-border p-8 space-y-5">
+              <div className="flex items-center gap-3">
+                <FileText className="w-6 h-6 text-forest-green" aria-hidden="true" />
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+                  Statutory &amp; Governance Repository
                 </h3>
               </div>
-              <p className="text-sm text-secondary-text max-w-md">
-                Formal filings, programmatic assessments, and financial statements made available for public scrutiny.
+              <p className="text-sm text-secondary-text leading-relaxed">
+                Signed registration certificates, 12A/80G documentation, and audited annual financial
+                reports are not uploaded yet and therefore not listed as downloadable files.
               </p>
-            </div>
-
-            <div className="space-y-4">
-              {[
-                {
-                  title: "Annual Governance & Programmatic Charter (2025–2026)",
-                  type: "Governance Document",
-                  date: "Published: Oct 2025",
-                  status: "Available for Download",
-                  size: "Draft Release v1.0",
-                },
-                {
-                  title: "Child Safeguarding Compliance & Practice Protocol",
-                  type: "Policy Directive",
-                  date: "Updated: Jan 2026",
-                  status: "Available for Download",
-                  size: "Active Compliance Document",
-                },
-                {
-                  title: "First Operational Cycle Financial Audit Statement",
-                  type: "Statutory Filing",
-                  date: "Scheduled release",
-                  status: "Pending Independent Audit Completion",
-                  size: "Awaiting Auditor Sign-off",
-                },
-              ].map((doc, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white border border-border hover:border-forest-green transition-colors rounded-xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0 mt-0.5">
-                      <FileText className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-main-text">{doc.title}</h4>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-secondary-text mt-1">
-                        <span>{doc.type}</span>
-                        <span>•</span>
-                        <span>{doc.date}</span>
-                        <span>•</span>
-                        <span className="font-medium text-forest-green">{doc.size}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 flex items-center gap-3">
-                    <Badge variant={doc.status.includes("Pending") ? "warning" : "success"}>
-                      {doc.status}
-                    </Badge>
-                  </div>
+              <div className="space-y-2.5 text-xs">
+                <div className="p-3 rounded-lg bg-white border border-border flex items-center justify-between gap-2">
+                  <span className="font-medium text-main-text">Child Safeguarding Policy (Draft)</span>
+                  <Link href="/safeguarding" className="text-forest-green font-semibold underline">
+                    Read Draft Online
+                  </Link>
                 </div>
-              ))}
+                <div className="p-3 rounded-lg bg-white border border-border flex items-center justify-between gap-2">
+                  <span className="font-medium text-main-text">Audited Annual Financial Statements</span>
+                  <Badge variant="warning">Pending Upload</Badge>
+                </div>
+                <div className="p-3 rounded-lg bg-white border border-border flex items-center justify-between gap-2">
+                  <span className="font-medium text-main-text">Verified 12A / 80G / Registration Certificates</span>
+                  <Badge variant="warning">Pending Verification</Badge>
+                </div>
+              </div>
             </div>
           </div>
         </Section>
 
-        {/* Governance & Anti-Fraud Standards */}
+        {/* 4. Governance Commitments */}
         <Section background="ivory">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-6 text-center">
-              Our Governance Pillars
-            </h3>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <Card variant="bordered" padding="md">
-                <CheckCircle2 className="w-6 h-6 text-forest-green mb-3" />
-                <h4 className="font-semibold text-main-text mb-2">Dual-Key Approvals</h4>
-                <p className="text-xs text-secondary-text leading-relaxed">
-                  No expenditure or major programme alteration is authorized by a single individual.
-                </p>
-              </Card>
-              <Card variant="bordered" padding="md">
-                <Shield className="w-6 h-6 text-forest-green mb-3" />
-                <h4 className="font-semibold text-main-text mb-2">Safeguarding Audits</h4>
-                <p className="text-xs text-secondary-text leading-relaxed">
-                  Routine background evaluations and compliance audits across all field centers.
-                </p>
-              </Card>
-              <Card variant="bordered" padding="md">
-                <Eye className="w-6 h-6 text-forest-green mb-3" />
-                <h4 className="font-semibold text-main-text mb-2">Public Inquiries</h4>
-                <p className="text-xs text-secondary-text leading-relaxed">
-                  Dedicated channels for questions regarding fund allocation and programme operations.
-                </p>
-              </Card>
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <h2 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+              Governance Safeguards Built Into This Portal
+            </h2>
+            <div className="grid sm:grid-cols-3 gap-6 text-left">
+              {[
+                {
+                  title: "Safeguarding Media Locks",
+                  desc: "Identifiable photos of children stay unpublished in private review until documented consent is recorded.",
+                },
+                {
+                  title: "Disabled Unverified Payments",
+                  desc: "Live payment links and 80G tax-exemption promises remain disabled until official verification.",
+                },
+                {
+                  title: "Enquiry & Audit Traceability",
+                  desc: "Every administrative edit and status transition is logged for accountability oversight.",
+                },
+              ].map((g) => (
+                <Card key={g.title} variant="bordered" padding="md">
+                  <CheckCircle2 className="w-5 h-5 text-forest-green mb-2.5" aria-hidden="true" />
+                  <h3 className="font-bold text-main-text text-base mb-1.5">{g.title}</h3>
+                  <p className="text-xs text-secondary-text leading-relaxed">{g.desc}</p>
+                </Card>
+              ))}
+            </div>
+            <div>
+              <Link href="/contact">
+                <Button variant="outline" size="md">
+                  Submit a Transparency or Verification Enquiry
+                </Button>
+              </Link>
             </div>
           </div>
         </Section>

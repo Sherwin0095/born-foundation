@@ -1,24 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
-  FileText,
   Plus,
   Edit,
   CheckCircle,
   Archive,
   ShieldCheck,
-  Calendar,
 } from "lucide-react";
 import { Card, Button, Badge, Input, Textarea, Select } from "@/components/ui";
-import { getAllStories, saveStory } from "@/lib/data-store";
+import { saveStory } from "@/lib/data-store";
+import { MOCK_STORIES } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
 import { useAuth } from "@/lib/auth-context";
-import { formatDate } from "@/lib/utils";
 import type { Story, ContentStatus } from "@/lib/types";
 
 export default function AdminStoriesPage() {
   const { user } = useAuth();
-  const [stories, setStories] = useState<Story[]>([]);
+  const rawStories = useStoredData<Story[]>("stories", MOCK_STORIES);
+  const stories = useMemo(
+    () =>
+      [...rawStories].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+    [rawStories]
+  );
   const [editingStory, setEditingStory] = useState<Story | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -31,14 +37,6 @@ export default function AdminStoriesPage() {
     is_featured: false,
     status: "draft" as ContentStatus,
   });
-
-  const loadData = () => {
-    setStories(getAllStories());
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const handleEdit = (story: Story) => {
     setEditingStory(story);
@@ -75,19 +73,21 @@ export default function AdminStoriesPage() {
       updated_at: new Date().toISOString(),
     };
 
-    saveStory(storyToSave);
+    saveStory(storyToSave, user?.id);
     setIsCreating(false);
     setEditingStory(null);
-    loadData();
   };
 
   const handleStatusChange = (story: Story, newStatus: ContentStatus) => {
-    saveStory({
-      ...story,
-      status: newStatus,
-      published_at: newStatus === "published" ? (story.published_at || new Date().toISOString()) : story.published_at,
-    });
-    loadData();
+    saveStory(
+      {
+        ...story,
+        status: newStatus,
+        published_at:
+          newStatus === "published" ? story.published_at || new Date().toISOString() : story.published_at,
+      },
+      user?.id
+    );
   };
 
   return (
@@ -178,7 +178,9 @@ export default function AdminStoriesPage() {
                 options={[
                   { value: "draft", label: "Draft (Editor Only)" },
                   { value: "submitted", label: "Submitted for Review" },
-                  { value: "approved", label: "Approved by Safeguarding Reviewer" },
+                  { value: "in_review", label: "In Safeguarding Review" },
+                  { value: "changes_requested", label: "Changes Requested" },
+                  { value: "approved", label: "Approved by Reviewer" },
                   { value: "published", label: "Published (Live on Public Website)" },
                   { value: "archived", label: "Archived" },
                 ]}

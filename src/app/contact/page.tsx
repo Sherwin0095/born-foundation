@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import {
-  Mail,
   Phone,
   MapPin,
   Send,
   CheckCircle2,
-  AlertCircle,
   Clock,
   Shield,
+  MessageSquare,
+  Info,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -31,9 +31,9 @@ export default function ContactPage() {
     name: "",
     email: "",
     phone: "",
-    subject: "General Inquiry",
+    subject: "General Enquiry",
     message: "",
-    honeypot: "", // anti-spam field
+    honeypot: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -42,16 +42,18 @@ export default function ContactPage() {
 
   const validate = () => {
     const errs: Record<string, string> = {};
-    if (!formData.name.trim()) errs.name = "Full name is required";
+    if (!formData.name.trim() || formData.name.trim().length < 2) {
+      errs.name = "Full name is required (minimum 2 characters).";
+    }
     if (!formData.email.trim()) {
-      errs.email = "Email address is required";
+      errs.email = "Email address is required so we can reply.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errs.email = "Please enter a valid email address";
+      errs.email = "Please enter a valid email address.";
     }
     if (!formData.message.trim()) {
-      errs.message = "Message cannot be empty";
+      errs.message = "Message cannot be empty.";
     } else if (formData.message.trim().length < 15) {
-      errs.message = "Please share at least 15 characters describing your enquiry";
+      errs.message = "Please provide at least 15 characters describing your enquiry.";
     }
     return errs;
   };
@@ -59,7 +61,6 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.honeypot) {
-      // Spam detected silently
       setIsSuccess(true);
       return;
     }
@@ -74,6 +75,23 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        setErrors({
+          form:
+            payload.error ||
+            "Unable to submit your enquiry right now. You may also call +91 99864 95292.",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const newEnquiry: ContactEnquiry = {
         id: `enq-${Date.now()}`,
         name: formData.name.trim(),
@@ -86,7 +104,6 @@ export default function ContactPage() {
         updated_at: new Date().toISOString(),
       };
 
-      // Persist in local storage for offline mode
       saveEnquiry(newEnquiry);
 
       setIsSuccess(true);
@@ -94,12 +111,14 @@ export default function ContactPage() {
         name: "",
         email: "",
         phone: "",
-        subject: "General Inquiry",
+        subject: "General Enquiry",
         message: "",
         honeypot: "",
       });
-    } catch (err) {
-      setErrors({ form: "An error occurred while saving your message. Please try again." });
+    } catch {
+      setErrors({
+        form: "Network error submitting message. Please check your connection or call +91 99864 95292.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +130,7 @@ export default function ContactPage() {
       <main id="main-content">
         <PageHero
           title="Contact Us"
-          subtitle="Reach out to learn more about our programmes, volunteer, explore partnerships, or share concerns."
+          subtitle="Reach BORN FOUNDATION in Shanthinagar, Bengaluru for general enquiries, supervised volunteering, partnerships, or safeguarding concerns."
           breadcrumbs={[
             { label: "Home", href: "/" },
             { label: "Contact Us" },
@@ -120,92 +139,106 @@ export default function ContactPage() {
 
         <Section background="white">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-12 gap-12">
-            {/* Contact Details */}
-            <div className="lg:col-span-5 space-y-8">
+            {/* Contact Details Column */}
+            <div className="lg:col-span-5 space-y-6">
               <div>
-                <p className="text-muted-terracotta text-sm uppercase tracking-wider font-semibold mb-2">
-                  Get in Touch
+                <p className="text-muted-terracotta-dark text-xs uppercase tracking-wider font-bold mb-2">
+                  Secretariat &amp; Direct Telephone
                 </p>
-                <h2 className="text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-4">
-                  We'd Love to Hear From You
+                <h2 className="text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
+                  Connect With Our Team
                 </h2>
-                <p className="text-secondary-text leading-relaxed">
-                  Whether you wish to sponsor a child development initiative, coordinate corporate CSR
-                  partnerships, or report a community safeguarding concern, our team is here.
+                <p className="text-secondary-text text-sm sm:text-base leading-relaxed">
+                  Whether asking about community programmes, coordinating stationery or in-kind
+                  support, or discussing women and child development, please call or use the enquiry form.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <Card variant="bordered" padding="md" className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
-                    <Mail className="w-5 h-5" />
+                    <Phone className="w-5 h-5" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-main-text text-sm">Official Email</h3>
+                    <h3 className="font-semibold text-main-text text-sm">Telephone (Click to Call)</h3>
                     <a
-                      href="mailto:info@bornfoundation.org"
-                      className="text-secondary-text text-sm hover:text-forest-green transition-colors"
+                      href={SITE_CONFIG.contact.phoneHref}
+                      className="text-forest-green font-bold text-base hover:underline inline-block mt-0.5"
                     >
-                      info@bornfoundation.org
+                      {SITE_CONFIG.contact.phone}
                     </a>
-                  </div>
-                </Card>
-
-                <Card variant="bordered" padding="md" className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-main-text text-sm">Response Time</h3>
-                    <p className="text-secondary-text text-sm">
-                      We aim to review and respond to all inquiries within 48 business hours.
+                    <p className="text-xs text-secondary-text mt-1">
+                      Supplied directory telephone number
                     </p>
                   </div>
                 </Card>
 
                 <Card variant="bordered" padding="md" className="flex items-start gap-4">
                   <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
-                    <MapPin className="w-5 h-5" />
+                    <MapPin className="w-5 h-5" aria-hidden="true" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-main-text text-sm">Registered Secretariat & Office</h3>
-                    <p className="text-secondary-text text-sm leading-relaxed">
+                    <h3 className="font-semibold text-main-text text-sm">Address</h3>
+                    <p className="text-secondary-text text-sm leading-relaxed mt-0.5">
                       {SITE_CONFIG.contact.address}
+                    </p>
+                    <p className="text-xs text-secondary-text mt-2 italic">
+                      Map pin and verified exact landmark coordinates pending physical verification.
+                    </p>
+                  </div>
+                </Card>
+
+                <Card variant="bordered" padding="md" className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
+                    <Clock className="w-5 h-5" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-main-text text-sm">Opening Hours Note</h3>
+                    <p className="text-secondary-text text-xs leading-relaxed mt-0.5">
+                      {SITE_CONFIG.contact.openingHoursStatus}
+                    </p>
+                  </div>
+                </Card>
+
+                <Card variant="bordered" padding="md" className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-soft-sage text-forest-green flex items-center justify-center shrink-0">
+                    <MessageSquare className="w-5 h-5" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-main-text text-sm">Official Email Status</h3>
+                    <p className="text-secondary-text text-xs leading-relaxed mt-0.5">
+                      {SITE_CONFIG.contact.emailStatusNotice}
                     </p>
                   </div>
                 </Card>
               </div>
 
-              {/* Safeguarding Contact Callout */}
-              <div className="p-5 rounded-xl bg-forest-green text-white">
-                <div className="flex items-center gap-2 mb-2 font-semibold">
-                  <Shield className="w-5 h-5 text-warm-gold" />
-                  <h4>Child Safeguarding Concern?</h4>
+              {/* Honest Safeguarding Reporting Box */}
+              <div className="p-5 rounded-xl bg-forest-green text-white space-y-2">
+                <div className="flex items-center gap-2 font-semibold">
+                  <Shield className="w-5 h-5 text-warm-gold-light" aria-hidden="true" />
+                  <h3>Child Safeguarding Concerns</h3>
                 </div>
-                <p className="text-xs text-white/80 leading-relaxed mb-3">
-                  Urgent disclosures regarding child welfare or safety receive immediate priority review
-                  by our designated safeguarding officer.
+                <p className="text-xs text-white/90 leading-relaxed">
+                  {SITE_CONFIG.contact.safeguardingContactNotice}
                 </p>
-                <span className="text-xs font-semibold text-warm-gold">
-                  safeguarding@bornfoundation.org
-                </span>
               </div>
             </div>
 
-            {/* Form */}
-            <div className="lg:col-span-7">
+            {/* Form Column */}
+            <div className="lg:col-span-7 space-y-6">
               <Card variant="elevated" padding="lg">
                 {isSuccess ? (
                   <div className="text-center py-12 space-y-4">
-                    <div className="w-14 h-14 bg-green-100 text-green-700 rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-8 h-8" />
+                    <div className="w-14 h-14 bg-green-100 text-green-800 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-8 h-8" aria-hidden="true" />
                     </div>
                     <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-                      Message Successfully Sent
+                      Enquiry Recorded
                     </h3>
                     <p className="text-secondary-text max-w-md mx-auto text-sm leading-relaxed">
-                      Thank you for contacting Born Foundation. Your enquiry has been securely logged
-                      in our administration system. An authorized coordinator will review it shortly.
+                      Thank you for reaching out to BORN FOUNDATION. Your enquiry has been saved for
+                      review by an authorised staff coordinator.
                     </p>
                     <Button
                       variant="outline"
@@ -216,14 +249,14 @@ export default function ContactPage() {
                     </Button>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                    <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2">
-                      Send an Inquiry
+                  <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                    <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+                      Send an Enquiry
                     </h3>
 
                     {/* Anti-spam honeypot */}
                     <div className="hidden" aria-hidden="true">
-                      <label htmlFor="website-url">Leave this empty</label>
+                      <label htmlFor="website-url">Leave this field blank</label>
                       <input
                         id="website-url"
                         type="text"
@@ -237,7 +270,7 @@ export default function ContactPage() {
                     <Input
                       label="Your Full Name"
                       required
-                      placeholder="e.g. Priya Sharma"
+                      placeholder="Full name"
                       value={formData.name}
                       error={errors.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -245,34 +278,34 @@ export default function ContactPage() {
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       <Input
-                        label="Email Address"
+                        label="Your Email Address"
                         type="email"
                         required
-                        placeholder="e.g. priya@example.com"
+                        placeholder="you@example.com"
                         value={formData.email}
                         error={errors.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
 
                       <Input
-                        label="Phone Number (Optional)"
+                        label="Telephone Number (Optional)"
                         type="tel"
-                        placeholder="e.g. +91 98765 43210"
+                        placeholder="+91 98XXX XXXXX"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       />
                     </div>
 
                     <Select
-                      label="Subject / Nature of Inquiry"
+                      label="Subject / Nature of Enquiry"
                       required
                       options={[
-                        { value: "General Inquiry", label: "General Inquiry" },
-                        { value: "Volunteering Interest", label: "Volunteering Interest" },
-                        { value: "Corporate CSR / Partnership", label: "Corporate CSR / Partnership" },
-                        { value: "Financial Contribution Question", label: "Financial Contribution Question" },
-                        { value: "Media & Press", label: "Media & Press" },
-                        { value: "Child Safeguarding Concern", label: "Child Safeguarding Concern" },
+                        { value: "General Enquiry", label: "General Enquiry" },
+                        { value: "Women & Child Development", label: "Women & Child Development" },
+                        { value: "Volunteering Screening Enquiry", label: "Volunteering Screening Enquiry" },
+                        { value: "In-Kind Supplies Support", label: "In-Kind Supplies Support" },
+                        { value: "Organisational Partnership", label: "Organisational Partnership" },
+                        { value: "Confidential Safeguarding Concern", label: "Confidential Safeguarding Concern" },
                       ]}
                       value={formData.subject}
                       onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -281,22 +314,24 @@ export default function ContactPage() {
                     <Textarea
                       label="Your Message"
                       required
-                      placeholder="Please share detailed information regarding your inquiry..."
+                      placeholder="Please describe how BORN FOUNDATION can assist or collaborate..."
                       value={formData.message}
                       error={errors.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
 
-                    <div className="p-3 bg-surface-muted rounded-lg border border-border text-xs text-secondary-text flex items-start gap-2">
-                      <Shield className="w-4 h-4 text-forest-green shrink-0 mt-0.5" />
+                    <div className="p-3.5 bg-surface-muted rounded-lg border border-border text-xs text-secondary-text flex items-start gap-2.5">
+                      <Info className="w-4 h-4 text-forest-green shrink-0 mt-0.5" aria-hidden="true" />
                       <span>
-                        <strong>Privacy Notice:</strong> We store contact submissions exclusively for responding to
-                        your request. We never sell, lease, or distribute personal information to external marketers.
+                        <strong>Privacy Notice:</strong> Details entered here are stored solely to
+                        review and respond to your enquiry and are never shared with marketers.
+                        Please avoid sharing confidential identifying information about minors in
+                        this general web form.
                       </span>
                     </div>
 
                     {errors.form && (
-                      <p className="text-sm text-red-600" role="alert">
+                      <p className="text-sm text-red-700 font-medium" role="alert">
                         {errors.form}
                       </p>
                     )}
@@ -304,15 +339,16 @@ export default function ContactPage() {
                     <Button
                       type="submit"
                       variant="primary"
-                      className="w-full py-3"
+                      size="md"
+                      className="w-full"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
-                        "Submitting..."
+                        "Sending Message..."
                       ) : (
                         <span className="flex items-center justify-center gap-2">
-                          <Send className="w-4 h-4" />
-                          Send Message
+                          <Send className="w-4 h-4" aria-hidden="true" />
+                          Submit Enquiry
                         </span>
                       )}
                     </Button>

@@ -1,133 +1,157 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   BookOpen,
   Apple,
   Shield,
-  Lightbulb,
   Users,
+  Sparkles,
+  Compass,
   ArrowRight,
   HandHeart,
-  Mail,
+  Phone,
   ChevronRight,
   FileText,
-  Calendar,
   ShieldCheck,
   CheckCircle2,
-  Sparkles,
+  Camera,
+  MapPin,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button, Card, Badge, Section } from "@/components/ui";
-import { getPublishedProgrammes, getFeaturedStories } from "@/lib/data-store";
-import { formatDate, truncate } from "@/lib/utils";
+import { Button, Card, Badge, Section, SectionHeading } from "@/components/ui";
+import { MOCK_PROGRAMMES } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
+import { APPROVED_PUBLIC_GALLERY } from "@/lib/media-register";
+import { truncate } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/site-config";
-import type { Programme, Story } from "@/lib/types";
+import type { Programme } from "@/lib/types";
 
 export default function HomePage() {
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
-  const [stories, setStories] = useState<Story[]>([]);
+  const allProgrammes = useStoredData<Programme[]>("programmes", MOCK_PROGRAMMES);
+  const programmes = useMemo(
+    () =>
+      allProgrammes
+        .filter((p) => p.status === "published")
+        .sort((a, b) => a.order_index - b.order_index)
+        .slice(0, 6),
+    [allProgrammes]
+  );
 
-  useEffect(() => {
-    setProgrammes(getPublishedProgrammes().slice(0, 4));
-    setStories(getFeaturedStories().slice(0, 3));
-  }, []);
+  const heroImage = APPROVED_PUBLIC_GALLERY[1]; // learning-kits-facilitators
+  const womensImage = APPROVED_PUBLIC_GALLERY[0]; // womens-community-circle
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case "education":
+        return <BookOpen className="w-6 h-6" aria-hidden="true" />;
+      case "nutrition":
+        return <Apple className="w-6 h-6" aria-hidden="true" />;
+      case "child-development":
+        return <Shield className="w-6 h-6" aria-hidden="true" />;
+      case "cultural":
+        return <Sparkles className="w-6 h-6" aria-hidden="true" />;
+      case "experiences":
+        return <Compass className="w-6 h-6" aria-hidden="true" />;
+      case "women-community":
+        return <Users className="w-6 h-6" aria-hidden="true" />;
+      default:
+        return <Heart className="w-6 h-6" aria-hidden="true" />;
+    }
+  };
 
   return (
     <>
       <Header />
       <main id="main-content">
-        {/* ═══ 1. HERO SECTION (SPACIOUS 2-COLUMN ART-DIRECTED LAYOUT) ═══ */}
-        <section className="relative bg-forest-green text-white overflow-hidden py-20 sm:py-24 lg:py-32 border-b border-forest-green-dark">
-          {/* Subtle Background Lighting */}
-          <div className="absolute inset-0 opacity-15 pointer-events-none" aria-hidden="true">
-            <div className="absolute -top-32 right-10 w-[30rem] h-[30rem] rounded-full bg-warm-gold blur-3xl" />
-            <div className="absolute -bottom-32 left-10 w-[30rem] h-[30rem] rounded-full bg-soft-sage blur-3xl" />
+        {/* ═══ 1. HERO SECTION ═══ */}
+        <section className="relative bg-forest-green text-white overflow-hidden py-16 sm:py-22 lg:py-28 border-b border-forest-green-dark">
+          <div className="absolute inset-0 opacity-12 pointer-events-none" aria-hidden="true">
+            <div className="absolute -top-32 right-10 w-[28rem] h-[28rem] rounded-full bg-warm-gold blur-3xl" />
+            <div className="absolute -bottom-32 left-10 w-[28rem] h-[28rem] rounded-full bg-soft-sage blur-3xl" />
           </div>
 
           <div className="page-container relative z-10">
-            <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-              {/* Left Column (7 cols): Hero Messaging & Action */}
-              <div className="lg:col-span-7 space-y-7 text-left">
-                {/* Eyebrow Pill */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-xs sm:text-sm font-semibold tracking-wider text-warm-gold uppercase">
-                  <ShieldCheck className="w-4 h-4 text-warm-gold shrink-0" aria-hidden="true" />
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+              {/* Left Column (7 cols): Headline & Primary Actions */}
+              <div className="lg:col-span-7 space-y-6 text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-xs sm:text-sm font-semibold tracking-wider text-warm-gold-light uppercase">
+                  <ShieldCheck className="w-4 h-4 text-warm-gold-light shrink-0" aria-hidden="true" />
                   <span>{SITE_CONFIG.legalName}</span>
                 </div>
 
-                {/* Primary Headline */}
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.18] tracking-tight font-[family-name:var(--font-heading)] text-white">
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.16] tracking-tight font-[family-name:var(--font-heading)] text-white">
                   Every Child Deserves a{" "}
-                  <span className="text-warm-gold block sm:inline">Chance to Thrive</span>
+                  <span className="text-warm-gold-light block sm:inline">Brighter Tomorrow</span>
                 </h1>
 
-                {/* Subtitle / Mission Statement */}
-                <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed max-w-2xl font-normal">
-                  {SITE_CONFIG.description}
+                <p className="text-base sm:text-lg md:text-xl text-white/95 leading-relaxed max-w-2xl">
+                  {SITE_CONFIG.supportingStatement}
                 </p>
 
-                {/* Action Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-2">
-                  <Link href="/support">
-                    <Button variant="secondary" size="lg" className="shadow-lg">
-                      <Heart className="w-5 h-5 mr-2.5 fill-white/20" aria-hidden="true" />
-                      Support Our Work
+                  <Link href="/get-involved">
+                    <Button variant="secondary" size="lg" className="shadow-md">
+                      <HandHeart className="w-5 h-5 mr-2.5" aria-hidden="true" />
+                      Get Involved
                     </Button>
                   </Link>
                   <Link href="/about">
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-white/50 text-white hover:bg-white hover:text-forest-green"
+                      className="border-white/60 text-white hover:bg-white hover:text-forest-green"
                     >
-                      Learn About Us
-                      <ArrowRight className="w-5 h-5 ml-2.5" aria-hidden="true" />
+                      About Us
+                      <ArrowRight className="w-5 h-5 ml-2" aria-hidden="true" />
                     </Button>
                   </Link>
                 </div>
 
-                {/* Trust & Safeguarding Footnote */}
-                <div className="pt-6 flex flex-wrap items-center gap-6 sm:gap-8 text-xs sm:text-sm text-white/80 border-t border-white/15">
+                <div className="pt-5 flex flex-wrap items-center gap-x-8 gap-y-3 text-xs sm:text-sm text-white/85 border-t border-white/15">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-warm-gold shrink-0" aria-hidden="true" />
-                    <span>Strict Child Protection Policy</span>
+                    <MapPin className="w-4 h-4 text-warm-gold-light shrink-0" aria-hidden="true" />
+                    <span>{SITE_CONFIG.contact.shortLocation}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-warm-gold shrink-0" aria-hidden="true" />
-                    <span>Audited Financial Governance</span>
+                    <CheckCircle2 className="w-4 h-4 text-warm-gold-light shrink-0" aria-hidden="true" />
+                    <span>Child Safeguarding Priority</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right Column (5 cols): Illustrative Artwork Card */}
-              <div className="lg:col-span-5 flex justify-center">
-                <div className="relative w-full max-w-lg lg:max-w-none">
-                  {/* Outer Ambient Glow */}
-                  <div className="absolute -inset-3 bg-gradient-to-tr from-warm-gold/25 via-white/10 to-soft-sage/25 rounded-3xl blur-xl opacity-75" />
-
-                  {/* Main Visual Container */}
-                  <div className="relative rounded-3xl overflow-hidden border-2 border-white/25 bg-forest-green-dark shadow-2xl aspect-[4/3] sm:aspect-[16/11]">
-                    <img
-                      src="/images/hero-community.svg"
-                      alt="Illustrative depiction of inclusive learning and mentorship at a community center"
-                      className="w-full h-full object-cover object-center"
-                      loading="eager"
-                    />
-
-                    {/* Subtle Gradient Shade */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-forest-green-deep/80 via-transparent to-transparent pointer-events-none" />
-
-                    {/* Integrated Trust Tag */}
-                    <div className="absolute bottom-4 left-4 right-4 p-4 rounded-2xl bg-forest-green-deep/90 backdrop-blur-md border border-white/20 text-xs sm:text-sm text-white/95 flex items-center justify-between shadow-lg">
-                      <div className="flex items-center gap-2 font-bold text-warm-gold">
-                        <Sparkles className="w-4 h-4" />
-                        <span>Nurturing Potential</span>
-                      </div>
-                      <span className="text-white/80 text-xs">Community Centred</span>
+              {/* Right Column (5 cols): Approved Documentary Photography */}
+              <div className="lg:col-span-5">
+                <div className="relative rounded-3xl overflow-hidden border-2 border-white/25 bg-forest-green-deep shadow-2xl">
+                  <Image
+                    src={heroImage.webpSrc}
+                    alt={heroImage.altText}
+                    width={heroImage.width}
+                    height={heroImage.height}
+                    sizes="(max-width: 1023px) 100vw, 520px"
+                    priority
+                    loading="eager"
+                    className="w-full h-auto object-cover aspect-[4/3]"
+                  />
+                  <div className="bg-forest-green-deep/95 px-5 py-4 border-t border-white/15 flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-warm-gold-light">
+                        Educators & Learning Support
+                      </p>
+                      <p className="text-xs text-white/85 mt-0.5 line-clamp-1">
+                        Preparing learning supplies in Bengaluru community centres
+                      </p>
                     </div>
+                    <Link
+                      href="/gallery"
+                      className="text-xs font-bold text-warm-gold-light hover:text-white underline underline-offset-2 shrink-0"
+                    >
+                      Gallery →
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -135,72 +159,74 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ═══ 2. WHO WE ARE & CORE VALUES (AIRY, UNCOMPRESSED 2-COLUMN) ═══ */}
+        {/* ═══ 2. INTRODUCTION TO BORN FOUNDATION ═══ */}
         <Section background="white" padding="lg">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            {/* Left Narrative Column (5 cols) */}
-            <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-soft-sage text-forest-green text-xs font-bold tracking-wider uppercase">
+            <div className="lg:col-span-5 space-y-5">
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-forest-green px-3.5 py-1.5 rounded-full bg-soft-sage">
                 Who We Are
-              </div>
+              </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text leading-tight">
-                A Foundation Built on <span className="text-forest-green">Compassion & Trust</span>
+                Committed to Children&apos;s Welfare and{" "}
+                <span className="text-forest-green">Community Strength</span>
               </h2>
               <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                Born Foundation exists because every child matters. We believe that with structured
-                guidance, wholesome nourishment, and secure surroundings, children facing severe socio-economic
-                barriers can achieve emotional wellbeing and lifelong self-reliance.
+                BORN FOUNDATION is a non-profit organisation based in Shanthinagar, Bengaluru, dedicated
+                to supporting children from underprivileged and underserved backgrounds alongside
+                encouraging women and child development.
               </p>
-              <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                We work directly with grassroots caregivers, schools, and certified mentors to establish
-                sustainable developmental safety nets across underserved neighborhoods.
+              <p className="text-secondary-text text-base leading-relaxed">
+                A child&apos;s circumstances should never determine the limits of their dreams. We work
+                alongside families, educators, and local volunteers to promote essential resources,
+                educational encouragement, personal development, and protective community spaces.
               </p>
               <div className="pt-2">
                 <Link
                   href="/about"
-                  className="inline-flex items-center gap-2.5 text-forest-green font-bold text-base hover:text-forest-green-dark group transition-colors"
+                  className="inline-flex items-center gap-2 text-forest-green font-bold text-base hover:text-forest-green-deep group transition-colors"
                 >
-                  <span>Explore our organizational charter & history</span>
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
+                  <span>Read our About Us charter & safeguarding commitment</span>
+                  <ChevronRight
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    aria-hidden="true"
+                  />
                 </Link>
               </div>
             </div>
 
-            {/* Right Value Cards (7 cols: Balanced 2x2 Grid) */}
+            {/* 4 Core Commitments */}
             <div className="lg:col-span-7">
               <div className="grid sm:grid-cols-2 gap-6">
                 {[
                   {
                     icon: Heart,
-                    title: "Compassion",
-                    desc: "Every intervention is anchored in empathy, dignity, and unconditional respect for every child and their family.",
+                    title: "Compassion & Dignity",
+                    desc: "Children are seen for their abilities and possibilities — never portrayed as objects of pity.",
                   },
                   {
                     icon: Shield,
-                    title: "Child Safety",
-                    desc: "Rigorous safeguarding standards govern all field activities, staff inductions, and volunteer appointments.",
+                    title: "Safety & Protection First",
+                    desc: "Safeguarding practices protect children's wellbeing, dignity, privacy, and image rights at every step.",
                   },
                   {
                     icon: Users,
-                    title: "Community Roots",
-                    desc: "Collaborating alongside local educators, parents, and community leaders to create enduring grassroots ownership.",
+                    title: "Women & Family Participation",
+                    desc: "Inclusive women's dialogue and family collaboration strengthen protective support around every child.",
                   },
                   {
-                    icon: Lightbulb,
-                    title: "Empowerment",
-                    desc: "Equipping young minds with literacy, critical thinking, and vocational life skills for enduring self-reliance.",
+                    icon: CheckCircle2,
+                    title: "Transparent Stewardship",
+                    desc: "Strict zero-fabrication policy: supplied registry references and public data are verified before claims.",
                   },
                 ].map((val) => (
-                  <Card key={val.title} variant="interactive" padding="lg">
-                    <div className="w-13 h-13 rounded-2xl bg-soft-sage text-forest-green flex items-center justify-center mb-5 group-hover:bg-forest-green group-hover:text-white transition-colors">
+                  <Card key={val.title} variant="interactive" padding="md">
+                    <div className="w-12 h-12 rounded-xl bg-soft-sage text-forest-green flex items-center justify-center mb-4 group-hover:bg-forest-green group-hover:text-white transition-colors">
                       <val.icon className="w-6 h-6" aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2.5">
+                    <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2">
                       {val.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-secondary-text leading-relaxed">
-                      {val.desc}
-                    </p>
+                    <p className="text-sm text-secondary-text leading-relaxed">{val.desc}</p>
                   </Card>
                 ))}
               </div>
@@ -208,281 +234,195 @@ export default function HomePage() {
           </div>
         </Section>
 
-        {/* ═══ 3. FIVE CORE PROGRAMMES (WELL-SPACED CARD GRID) ═══ */}
-        <Section background="ivory" padding="lg">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-terracotta px-4 py-1.5 rounded-full bg-white border border-border shadow-xs">
-              Focus Areas
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-              Core Developmental Programmes
-            </h2>
-            <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-              Structured initiatives addressing the foundational pillars of child development,
-              academic advancement, and protective community care.
-            </p>
-          </div>
+        {/* ═══ 3. MISSION & VISION HIGHLIGHTS ═══ */}
+        <Section background="sage" padding="lg">
+          <SectionHeading
+            eyebrow="Guiding Statements"
+            title="Proposed Mission & Vision"
+            subtitle="Reflecting BORN FOUNDATION's commitment to children's learning, dignity, protection, and women's empowerment."
+          />
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {programmes.length > 0 ? (
-              programmes.map((prog) => {
-                const icons: Record<string, React.ReactNode> = {
-                  education: <BookOpen className="w-6 h-6" />,
-                  nutrition: <Apple className="w-6 h-6" />,
-                  care: <Shield className="w-6 h-6" />,
-                  skills: <Lightbulb className="w-6 h-6" />,
-                  community: <Users className="w-6 h-6" />,
-                };
-                return (
-                  <Link key={prog.id} href={`/programmes/${prog.slug}`} className="block h-full group">
-                    <Card
-                      variant="interactive"
-                      padding="lg"
-                      className="h-full flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="w-13 h-13 bg-soft-sage rounded-2xl flex items-center justify-center mb-5 text-forest-green group-hover:bg-forest-green group-hover:text-white transition-colors">
-                          {icons[prog.category] || <Heart className="w-6 h-6" />}
-                        </div>
-                        <Badge variant="default" className="mb-3 text-[11px] capitalize">
-                          {prog.category}
-                        </Badge>
-                        <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3 group-hover:text-forest-green transition-colors">
-                          {prog.title}
-                        </h3>
-                        <p className="text-sm text-secondary-text leading-relaxed">
-                          {truncate(prog.description, 115)}
-                        </p>
-                      </div>
-
-                      <div className="pt-6 mt-6 border-t border-border flex items-center justify-between text-xs sm:text-sm font-semibold text-forest-green">
-                        <span>Read Full Details</span>
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" aria-hidden="true" />
-                      </div>
-                    </Card>
-                  </Link>
-                );
-              })
-            ) : (
-              <div className="col-span-full text-center py-10">
-                <p className="text-secondary-text">Programme tracks are being prepared.</p>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mt-12">
+            <Card variant="default" padding="lg" className="bg-white shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-forest-green text-white rounded-xl flex items-center justify-center mb-5">
+                  <Heart className="w-6 h-6" aria-hidden="true" />
+                </div>
+                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
+                  Our Mission
+                </h3>
+                <p className="text-secondary-text text-base leading-relaxed">
+                  {SITE_CONFIG.proposedMission}
+                </p>
               </div>
-            )}
+              <div className="mt-6 pt-4 border-t border-border text-xs font-bold text-forest-green uppercase tracking-wider">
+                Children&apos;s Welfare • Women &amp; Community Empowerment
+              </div>
+            </Card>
+
+            <Card variant="default" padding="lg" className="bg-white shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 bg-muted-terracotta text-white rounded-xl flex items-center justify-center mb-5">
+                  <Sparkles className="w-6 h-6" aria-hidden="true" />
+                </div>
+                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
+                  Our Vision
+                </h3>
+                <p className="text-secondary-text text-base leading-relaxed">
+                  {SITE_CONFIG.proposedVision}
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-border text-xs font-bold text-muted-terracotta-dark uppercase tracking-wider">
+                Dignity • Safety • Equal Opportunity
+              </div>
+            </Card>
+          </div>
+        </Section>
+
+        {/* ═══ 4. CORE FOCUS AREAS & ACTIVITY THEMES ═══ */}
+        <Section background="ivory" padding="lg">
+          <SectionHeading
+            eyebrow="Focus Areas"
+            title="How Our Work Supports Children & Women"
+            subtitle="Organisational focus areas and community activity themes grounded in BORN FOUNDATION's community work in Bengaluru."
+          />
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-12">
+            {programmes.map((prog) => (
+              <Link key={prog.id} href={`/programmes/${prog.slug}`} className="block h-full group">
+                <Card
+                  variant="interactive"
+                  padding="lg"
+                  className="h-full flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="w-12 h-12 bg-soft-sage rounded-xl flex items-center justify-center text-forest-green group-hover:bg-forest-green group-hover:text-white transition-colors">
+                        {getCategoryIcon(prog.category)}
+                      </div>
+                      <Badge variant="default" className="text-[11px]">
+                        Focus Area
+                      </Badge>
+                    </div>
+                    <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2.5 group-hover:text-forest-green transition-colors">
+                      {prog.title}
+                    </h3>
+                    <p className="text-sm text-secondary-text leading-relaxed">
+                      {truncate(prog.description, 130)}
+                    </p>
+                  </div>
+
+                  <div className="pt-5 mt-5 border-t border-border flex items-center justify-between text-xs sm:text-sm font-semibold text-forest-green">
+                    <span>Explore Focus Area</span>
+                    <ArrowRight
+                      className="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </Card>
+              </Link>
+            ))}
           </div>
 
-          <div className="text-center mt-14">
+          <div className="text-center mt-12">
             <Link href="/programmes">
-              <Button variant="outline" size="lg">
-                View All Programmes
+              <Button variant="outline" size="md">
+                Explore All Focus Areas & Activities
                 <ArrowRight className="w-4 h-4 ml-2" aria-hidden="true" />
               </Button>
             </Link>
           </div>
         </Section>
 
-        {/* ═══ 4. MISSION & VISION (BALANCED EXPANSIVE CARDS) ═══ */}
-        <Section background="sage" padding="lg">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-forest-green px-4 py-1.5 rounded-full bg-white border border-border">
-              Guiding Framework
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-              Our Mission and Vision
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Mission Card */}
-            <Card variant="default" padding="lg" className="bg-white shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="w-13 h-13 bg-forest-green text-white rounded-2xl flex items-center justify-center mb-6">
-                  <Heart className="w-7 h-7 fill-white/20" aria-hidden="true" />
-                </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-4">
-                  Our Mission
-                </h3>
-                <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                  To provide holistic support to children in need through community-based initiatives
-                  that bridge educational gaps, ensure nutritional security, foster emotional wellbeing,
-                  and strengthen families — ensuring every child has the opportunity to thrive in a
-                  protective, supportive, and dignified environment.
-                </p>
-              </div>
-              <div className="mt-8 pt-5 border-t border-border text-xs font-bold text-forest-green uppercase tracking-wider">
-                Action-Oriented • Community-Led
-              </div>
-            </Card>
-
-            {/* Vision Card */}
-            <Card variant="default" padding="lg" className="bg-white shadow-sm flex flex-col justify-between">
-              <div>
-                <div className="w-13 h-13 bg-muted-terracotta text-white rounded-2xl flex items-center justify-center mb-6">
-                  <Lightbulb className="w-7 h-7 fill-white/20" aria-hidden="true" />
-                </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-4">
-                  Our Vision
-                </h3>
-                <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                  An equitable world where no child is left behind due to poverty, neglect, or circumstance
-                  — where every young person is protected, cherished, and empowered with the knowledge,
-                  values, and practical tools to shape their own fulfilling and dignified future.
-                </p>
-              </div>
-              <div className="mt-8 pt-5 border-t border-border text-xs font-bold text-muted-terracotta uppercase tracking-wider">
-                Long-Term Horizon • Sustainable Hope
-              </div>
-            </Card>
-          </div>
-        </Section>
-
-        {/* ═══ 5. HOW WE HELP (3-STAGE STRUCTURED TIMELINE) ═══ */}
+        {/* ═══ 5. WOMEN & COMMUNITY DEVELOPMENT + APPROVED GALLERY PREVIEW ═══ */}
         <Section background="white" padding="lg">
-          <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-forest-green px-4 py-1.5 rounded-full bg-soft-sage">
-              Methodology
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-              How We Create Enduring Change
-            </h2>
-            <p className="text-secondary-text text-base">
-              A respectful, transparent 3-stage model focused on grassroots dignity and verifiable outcomes.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                step: "01",
-                title: "Identify & Listen",
-                desc: "We work directly with grassroots stakeholders to understand genuine local needs without imposing external preconceptions.",
-              },
-              {
-                step: "02",
-                title: "Nurture & Protect",
-                desc: "We deliver structured educational tutoring, wholesome nutrition, and safe protective spaces tailored for vulnerable minors.",
-              },
-              {
-                step: "03",
-                title: "Empower & Sustain",
-                desc: "We train local caregivers, mentor older youth, and establish community ownership so positive change outlasts direct aid.",
-              },
-            ].map((item) => (
-              <div key={item.step} className="bg-surface-muted rounded-2xl border border-border p-8 sm:p-10 text-center shadow-xs">
-                <div className="w-14 h-14 bg-forest-green text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-xl font-bold font-[family-name:var(--font-heading)] shadow">
-                  {item.step}
-                </div>
-                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
-                  {item.title}
-                </h3>
-                <p className="text-sm sm:text-base text-secondary-text leading-relaxed">
-                  {item.desc}
-                </p>
+          <div className="grid lg:grid-cols-12 gap-12 items-center max-w-6xl mx-auto">
+            <div className="lg:col-span-6 space-y-5">
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-forest-green px-3.5 py-1.5 rounded-full bg-soft-sage">
+                Women &amp; Community Development
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text leading-tight">
+                Strengthening Women, Families &amp; Grassroots Networks
+              </h2>
+              <p className="text-secondary-text text-base leading-relaxed">
+                Supporting children cannot stand apart from supporting the mothers, women caregivers,
+                and community members around them. Through neighbourhood discussion circles and shared
+                community engagement, BORN FOUNDATION encourages women&apos;s voices and mutual support.
+              </p>
+              <p className="text-secondary-text text-sm leading-relaxed">
+                Our public photographic gallery displays only EXIF-stripped, non-identifying
+                activity photographs curated under strict child safeguarding standards.
+              </p>
+              <div className="flex flex-wrap gap-3 pt-2">
+                <Link href="/gallery">
+                  <Button variant="primary" size="md">
+                    <Camera className="w-4 h-4 mr-2" aria-hidden="true" />
+                    View Approved Photo Gallery
+                  </Button>
+                </Link>
+                <Link href="/programmes/women-community-development">
+                  <Button variant="outline" size="md">
+                    Women &amp; Community Focus
+                  </Button>
+                </Link>
               </div>
-            ))}
+            </div>
+
+            <div className="lg:col-span-6">
+              <div className="rounded-3xl overflow-hidden border border-border shadow-md bg-warm-ivory">
+                <Image
+                  src={womensImage.webpSrc}
+                  alt={womensImage.altText}
+                  width={womensImage.width}
+                  height={womensImage.height}
+                  sizes="(max-width: 1023px) 100vw, 580px"
+                  loading="eager"
+                  className="w-full h-auto object-cover"
+                />
+                <div className="px-6 py-4 bg-white border-t border-border flex items-center justify-between gap-4">
+                  <p className="text-xs sm:text-sm text-secondary-text">
+                    {womensImage.caption}
+                  </p>
+                  <Badge variant="success" className="shrink-0 text-[11px]">
+                    Safeguarded
+                  </Badge>
+                </div>
+              </div>
+            </div>
           </div>
         </Section>
 
-        {/* ═══ 6. WAYS TO CONTRIBUTE (EXPANSIVE CARDS) ═══ */}
+        {/* ═══ 6. SAFEGUARDING & TRANSPARENCY COMMITMENT ═══ */}
         <Section background="ivory" padding="lg">
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-terracotta px-4 py-1.5 rounded-full bg-white border border-border shadow-xs">
-              Get Involved
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-              Ways You Can Stand With Children
-            </h2>
-            <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-              Every donation, volunteer hour, and corporate partnership directly transforms a child&apos;s daily reality.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Donate Card */}
-            <Card variant="bordered" padding="lg" className="bg-white text-center flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-muted-terracotta/10 text-muted-terracotta rounded-2xl flex items-center justify-center mx-auto mb-5">
-                  <Heart className="w-7 h-7" aria-hidden="true" />
-                </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
-                  Donate
-                </h3>
-                <p className="text-sm sm:text-base text-secondary-text leading-relaxed mb-6">
-                  Provide learning kits, nutrition packs, or sponsor community tutoring spaces.
-                </p>
-              </div>
-              <Link href="/support">
-                <Button variant="secondary" size="md" className="w-full">
-                  Explore Giving Options
-                </Button>
-              </Link>
-            </Card>
-
-            {/* Volunteer Card */}
-            <Card variant="bordered" padding="lg" className="bg-white text-center flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-forest-green/10 text-forest-green rounded-2xl flex items-center justify-center mx-auto mb-5">
-                  <HandHeart className="w-7 h-7" aria-hidden="true" />
-                </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
-                  Volunteer
-                </h3>
-                <p className="text-sm sm:text-base text-secondary-text leading-relaxed mb-6">
-                  Share your weekends teaching literacy, arts, mentoring, or assisting centre operations.
-                </p>
-              </div>
-              <Link href="/support#volunteer">
-                <Button variant="outline" size="md" className="w-full">
-                  Apply as Volunteer
-                </Button>
-              </Link>
-            </Card>
-
-            {/* Corporate / CSR Card */}
-            <Card variant="bordered" padding="lg" className="bg-white text-center flex flex-col justify-between">
-              <div>
-                <div className="w-14 h-14 bg-warm-gold/20 text-warm-gold-dark rounded-2xl flex items-center justify-center mx-auto mb-5">
-                  <Users className="w-7 h-7" aria-hidden="true" />
-                </div>
-                <h3 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-3">
-                  Partner / CSR
-                </h3>
-                <p className="text-sm sm:text-base text-secondary-text leading-relaxed mb-6">
-                  Collaborate on audited corporate CSR projects aligned with UN Sustainable Development Goals.
-                </p>
-              </div>
-              <Link href="/support#partnerships">
-                <Button variant="gold" size="md" className="w-full">
-                  Partner With Us
-                </Button>
-              </Link>
-            </Card>
-          </div>
-        </Section>
-
-        {/* ═══ 7. TRANSPARENCY & ACCOUNTABILITY ═══ */}
-        <Section background="white" padding="lg">
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
-            <div className="lg:col-span-6 space-y-6">
-              <span className="text-xs font-bold uppercase tracking-wider text-forest-green px-4 py-1.5 rounded-full bg-soft-sage">
-                Accountability
+          <div className="grid lg:grid-cols-12 gap-12 items-center max-w-6xl mx-auto">
+            <div className="lg:col-span-6 space-y-5">
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-forest-green px-3.5 py-1.5 rounded-full bg-soft-sage">
+                Accountability &amp; Safeguarding
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-                Transparency, Integrity & Public Scrutiny
+                Honest Disclosures &amp; Child Privacy Protection
               </h2>
-              <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                We believe trust is earned through radical openness. Born Foundation upholds
-                strict dual-key financial sign-offs, independent operational audits, and zero
-                tolerance for fabricated impact figures.
+              <p className="text-secondary-text text-base leading-relaxed">
+                We publish verified details transparently and clearly distinguish supplied registry
+                references (<span className="font-medium text-main-text">{SITE_CONFIG.registry.registrationReference}</span>,{" "}
+                directory listings referencing 12A/80G/FCRA) that still await independent document verification.
               </p>
-              <p className="text-secondary-text text-base sm:text-lg leading-relaxed">
-                All statutory filings, safeguarding compliance certifications, and programme audit reports
-                are published directly on our portal for public inspection.
+              <p className="text-secondary-text text-base leading-relaxed">
+                Online donations remain disabled pending bank and compliance clearance, and all
+                photographs containing identifiable minors remain restricted in staff review unless
+                documented parental permission is obtained.
               </p>
-              <div className="pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <Link href="/impact">
                   <Button variant="outline" size="md">
                     <FileText className="w-4 h-4 mr-2" aria-hidden="true" />
-                    Inspect Impact Disclosures
+                    Impact &amp; Registry Disclosures
+                  </Button>
+                </Link>
+                <Link href="/safeguarding">
+                  <Button variant="ghost" size="md">
+                    <Shield className="w-4 h-4 mr-2" aria-hidden="true" />
+                    Child Safeguarding Policy
                   </Button>
                 </Link>
               </div>
@@ -490,46 +430,132 @@ export default function HomePage() {
 
             <div className="lg:col-span-6 grid grid-cols-2 gap-5">
               {[
-                { icon: FileText, label: "Audited Filings", desc: "Formal report repository" },
-                { icon: Shield, label: "Safeguarded", desc: "Child protection protocol" },
-                { icon: Users, label: "Community Voice", desc: "Grassroots governance" },
-                { icon: Heart, label: "Donor Trust", desc: "Tracked resource allocation" },
+                {
+                  icon: Shield,
+                  label: "Child Safeguarding",
+                  desc: "Mandatory volunteer screening & photography consent",
+                },
+                {
+                  icon: FileText,
+                  label: "Zero Fabrication",
+                  desc: "Unverified claims & compliance items clearly marked",
+                },
+                {
+                  icon: Users,
+                  label: "Supervised Access",
+                  desc: "No unsupervised volunteer access to children",
+                },
+                {
+                  icon: Heart,
+                  label: "Ethical Communication",
+                  desc: "Dignity-first storytelling without exploitation",
+                },
               ].map((item) => (
-                <div key={item.label} className="bg-surface-muted rounded-2xl border border-border p-6 sm:p-7 text-center">
+                <div
+                  key={item.label}
+                  className="bg-white rounded-2xl border border-border p-6 text-center shadow-xs"
+                >
                   <item.icon className="w-8 h-8 text-forest-green mx-auto mb-3" aria-hidden="true" />
-                  <h3 className="font-bold text-base text-main-text mb-1">
-                    {item.label}
-                  </h3>
-                  <p className="text-xs text-secondary-text">
-                    {item.desc}
-                  </p>
+                  <h3 className="font-bold text-base text-main-text mb-1">{item.label}</h3>
+                  <p className="text-xs text-secondary-text leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </Section>
 
-        {/* ═══ 8. BOTTOM INVITATION BANNER ═══ */}
-        <section className="bg-forest-green text-white py-20 sm:py-24 border-t border-forest-green-dark">
-          <div className="page-container text-center max-w-3xl mx-auto space-y-7">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-heading)] text-white">
-              Every Child Deserves Your Support
-            </h2>
-            <p className="text-white/90 text-base sm:text-lg md:text-xl leading-relaxed">
-              Join our community of volunteers, mentors, donors, and partners working
-              tirelessly to ensure no child is left behind.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 pt-3">
-              <Link href="/support#volunteer">
-                <Button variant="gold" size="lg">
-                  <HandHeart className="w-5 h-5 mr-2.5" aria-hidden="true" />
-                  Become a Volunteer
+        {/* ═══ 7. WAYS TO CONTRIBUTE ═══ */}
+        <Section background="white" padding="lg">
+          <SectionHeading
+            eyebrow="Get Involved"
+            title="Ways to Support Safely & Responsibly"
+            subtitle="Whether offering vetted volunteer skills, educational supplies, or community partnerships, every contribution starts with dialogue."
+          />
+
+          <div className="grid sm:grid-cols-3 gap-8 max-w-5xl mx-auto mt-12">
+            <Card variant="bordered" padding="lg" className="text-center flex flex-col justify-between">
+              <div>
+                <div className="w-13 h-13 bg-soft-sage text-forest-green rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <HandHeart className="w-7 h-7" aria-hidden="true" />
+                </div>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2.5">
+                  Volunteer (Screened)
+                </h3>
+                <p className="text-sm text-secondary-text leading-relaxed mb-6">
+                  Express interest in supervised learning assistance, creative workshops, or logistics after safeguarding checks.
+                </p>
+              </div>
+              <Link href="/get-involved#volunteer-form">
+                <Button variant="primary" size="md" className="w-full">
+                  Express Interest
                 </Button>
               </Link>
+            </Card>
+
+            <Card variant="bordered" padding="lg" className="text-center flex flex-col justify-between">
+              <div>
+                <div className="w-13 h-13 bg-muted-terracotta/15 text-muted-terracotta-dark rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-7 h-7" aria-hidden="true" />
+                </div>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2.5">
+                  Support &amp; Supplies
+                </h3>
+                <p className="text-sm text-secondary-text leading-relaxed mb-6">
+                  Donate books, stationery kits, or review our financial support &amp; payment verification notice.
+                </p>
+              </div>
+              <Link href="/support">
+                <Button variant="secondary" size="md" className="w-full">
+                  Support Information
+                </Button>
+              </Link>
+            </Card>
+
+            <Card variant="bordered" padding="lg" className="text-center flex flex-col justify-between">
+              <div>
+                <div className="w-13 h-13 bg-warm-gold/25 text-main-text rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Users className="w-7 h-7" aria-hidden="true" />
+                </div>
+                <h3 className="text-xl font-bold font-[family-name:var(--font-heading)] text-main-text mb-2.5">
+                  Partnerships &amp; Outreach
+                </h3>
+                <p className="text-sm text-secondary-text leading-relaxed mb-6">
+                  Explore responsible collaborations across schools, community groups, and organisations in Bengaluru.
+                </p>
+              </div>
+              <Link href="/get-involved#partnerships">
+                <Button variant="outline" size="md" className="w-full">
+                  Partner With Us
+                </Button>
+              </Link>
+            </Card>
+          </div>
+        </Section>
+
+        {/* ═══ 8. BOTTOM CONTACT CALL TO ACTION ═══ */}
+        <section className="bg-forest-green text-white py-16 sm:py-22 border-t border-forest-green-dark">
+          <div className="page-container text-center max-w-3xl mx-auto space-y-6">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-heading)] text-white">
+              Connect With BORN FOUNDATION
+            </h2>
+            <p className="text-white/90 text-base sm:text-lg leading-relaxed">
+              Visit our secretariat note or reach us from Shanthinagar, Bengaluru to learn more about supporting children and community development.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 pt-2">
+              <a href={SITE_CONFIG.contact.phoneHref}>
+                <Button variant="gold" size="lg">
+                  <Phone className="w-5 h-5 mr-2.5" aria-hidden="true" />
+                  Call {SITE_CONFIG.contact.phone}
+                </Button>
+              </a>
               <Link href="/contact">
-                <Button variant="outline" size="lg" className="border-white/50 text-white hover:bg-white hover:text-forest-green">
-                  <Mail className="w-5 h-5 mr-2.5" aria-hidden="true" />
-                  Contact Our Team
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-white/60 text-white hover:bg-white hover:text-forest-green"
+                >
+                  Open Enquiry Form
+                  <ArrowRight className="w-5 h-5 ml-2.5" aria-hidden="true" />
                 </Button>
               </Link>
             </div>

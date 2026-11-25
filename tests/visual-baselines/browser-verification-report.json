@@ -1,0 +1,333 @@
+{
+  "checkedAt": "2026-11-25T16:01:59.701Z",
+  "overflowFailures": [],
+  "brokenImages": [],
+  "consoleErrors": [],
+  "routeMetrics": [
+    {
+      "route": "/",
+      "viewport": 320,
+      "scrollWidth": 324,
+      "innerWidth": 324,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 360,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/about",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 1,
+      "brokenImgs": [],
+      "h1Text": "About BORN FOUNDATION",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/programmes",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 3,
+      "brokenImgs": [],
+      "h1Text": "Our Programmes & Focus Areas",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/gallery",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 3,
+      "brokenImgs": [],
+      "h1Text": "Community Photo Gallery",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/impact",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Impact & Transparency",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/get-involved",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Get Involved",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/support",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Support Our Work",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/stories",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Stories & Updates",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/contact",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Contact Us",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/faq",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Frequently Asked Questions",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/safeguarding",
+      "viewport": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Child Safeguarding Policy",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 768,
+      "scrollWidth": 753,
+      "innerWidth": 768,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 1024,
+      "scrollWidth": 1009,
+      "innerWidth": 1024,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/about",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 1,
+      "brokenImgs": [],
+      "h1Text": "About BORN FOUNDATION",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/programmes",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 3,
+      "brokenImgs": [],
+      "h1Text": "Our Programmes & Focus Areas",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/gallery",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 3,
+      "brokenImgs": [],
+      "h1Text": "Community Photo Gallery",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/impact",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Impact & Transparency",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/get-involved",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Get Involved",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/support",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Support Our Work",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/stories",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Stories & Updates",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/contact",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Contact Us",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/faq",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Frequently Asked Questions",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/safeguarding",
+      "viewport": 1280,
+      "scrollWidth": 1265,
+      "innerWidth": 1280,
+      "overflow": false,
+      "imgCount": 0,
+      "brokenImgs": [],
+      "h1Text": "Child Safeguarding Policy",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 1440,
+      "scrollWidth": 1425,
+      "innerWidth": 1440,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    },
+    {
+      "route": "/",
+      "viewport": 1920,
+      "scrollWidth": 1905,
+      "innerWidth": 1920,
+      "overflow": false,
+      "imgCount": 2,
+      "brokenImgs": [],
+      "h1Text": "Every Child Deserves a Brighter Tomorrow",
+      "h1Color": "rgb(255, 255, 255)"
+    }
+  ],
+  "interactions": {
+    "mobileMenuOpens": true,
+    "galleryLightboxOpens": true,
+    "contactValidationRejectsEmpty": true
+  },
+  "performanceMetrics": {
+    "DOMContentLoaded": 3560.402039,
+    "FirstMeaningfulPaint": 0,
+    "LayoutDuration": 0.003551,
+    "JSHeapUsedMB": 14.58
+  },
+  "accessibilityChecks": {
+    "imgsMissingAlt": 0,
+    "buttonsMissingLabel": 0,
+    "hasMainLandmark": true,
+    "hasSkipLink": true
+  }
+}

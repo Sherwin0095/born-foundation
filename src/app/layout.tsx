@@ -1,31 +1,35 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { SITE_CONFIG } from "@/lib/site-config";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "Born Foundation — Caring for Every Child's Tomorrow",
-    template: "%s | Born Foundation",
+    default: `${SITE_CONFIG.name} — ${SITE_CONFIG.tagline}`,
+    template: `%s | ${SITE_CONFIG.name}`,
   },
-  description:
-    "Born Foundation is a non-profit organisation dedicated to the care, wellbeing, development and support of children who need assistance.",
+  description: SITE_CONFIG.supportingStatement,
   keywords: [
-    "Born Foundation",
-    "NGO",
-    "children",
-    "education",
-    "nutrition",
-    "child welfare",
-    "India",
-    "non-profit",
+    "BORN FOUNDATION",
+    "Bengaluru NGO",
+    "children welfare",
+    "women and child development",
+    "education support",
+    "Shanthinagar Bengaluru",
+    "child safeguarding",
   ],
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "Born Foundation",
-    title: "Born Foundation — Caring for Every Child's Tomorrow",
-    description:
-      "Dedicated to the care, wellbeing, development and support of children who need assistance.",
+    siteName: SITE_CONFIG.name,
+    title: `${SITE_CONFIG.name} — ${SITE_CONFIG.homepageHeadline}`,
+    description: SITE_CONFIG.supportingStatement,
   },
   robots: {
     index: true,
@@ -38,12 +42,33 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Structured data built strictly from supplied organisational details
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    name: SITE_CONFIG.name,
+    alternateName: SITE_CONFIG.legalName,
+    telephone: "+91-99864-95292",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "No. 6/2, Langford Road, 4th Cross, Shanthinagar",
+      addressLocality: "Bengaluru",
+      addressRegion: "Karnataka",
+      postalCode: "560027",
+      addressCountry: "IN",
+    },
+    areaServed: "Bengaluru, Karnataka, India",
+    description: SITE_CONFIG.supportingStatement,
+  };
+
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en-IN" className="scroll-smooth">
       <body className="min-h-screen flex flex-col antialiased">
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

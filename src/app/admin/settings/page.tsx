@@ -1,27 +1,32 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Settings,
-  Shield,
-  Users,
-  Lock,
-  Save,
-  CheckCircle2,
-  Database,
-} from "lucide-react";
-import { Card, Button, Input, Select, Badge } from "@/components/ui";
-import { MOCK_PROFILES, MOCK_SITE_SETTINGS } from "@/lib/mock-data";
+import { Users, Save, CheckCircle2, Database } from "lucide-react";
+import { Card, Button, Input, Badge } from "@/components/ui";
+import { MOCK_PROFILES } from "@/lib/mock-data";
+import { SITE_CONFIG } from "@/lib/site-config";
+import { recordAuditAction } from "@/lib/data-store";
 import { useAuth } from "@/lib/auth-context";
 
 export default function AdminSettingsPage() {
-  const { user } = useAuth();
-  const [siteName, setSiteName] = useState("Born Foundation");
-  const [contactEmail, setContactEmail] = useState("info@bornfoundation.org");
+  const { user, hasRole } = useAuth();
+  const [siteName, setSiteName] = useState(SITE_CONFIG.name);
+  const [contactPhone, setContactPhone] = useState(SITE_CONFIG.contact.phone);
+  const [officialEmail, setOfficialEmail] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+
+  const canManageSettings = hasRole(["super_admin"]);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canManageSettings) return;
+    recordAuditAction(
+      user?.id || "admin-001",
+      "SITE_SETTINGS_UPDATED",
+      "site_settings",
+      "general",
+      `Updated site settings preview`
+    );
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
   };
@@ -30,91 +35,94 @@ export default function AdminSettingsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold font-[family-name:var(--font-heading)] text-main-text">
-          Site Settings & Staff Access Control
+          Site Settings &amp; Staff Access Control
         </h1>
         <p className="text-sm text-secondary-text">
-          Configure organization identifiers, operational toggles, and inspect RBAC roles.
+          Configure verified secretariat contact fields once available and inspect least-privilege RBAC roles.
         </p>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8">
-        {/* Core Configuration */}
         <div className="lg:col-span-7 space-y-6">
           <Card variant="bordered" padding="lg" className="bg-white">
             <h2 className="text-lg font-bold text-main-text mb-4">
-              General Identity Settings
+              Organisational Contact &amp; Identity Settings
             </h2>
             <form onSubmit={handleSave} className="space-y-4">
               <Input
-                label="Organization / Site Title"
+                label="Organisation Title"
                 value={siteName}
                 onChange={(e) => setSiteName(e.target.value)}
+                disabled={!canManageSettings}
               />
               <Input
-                label="Primary Inquiries Email"
-                type="email"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
+                label="Confirmed Secretariat Telephone"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                disabled={!canManageSettings}
               />
-              <div className="p-3 bg-surface-muted rounded-lg text-xs text-secondary-text">
-                All changes made here are saved directly into the active database configuration.
-              </div>
+              <Input
+                label="Official Email Address (Currently Unconfirmed)"
+                type="email"
+                placeholder="Enter verified email once confirmed by BORN FOUNDATION"
+                value={officialEmail}
+                onChange={(e) => setOfficialEmail(e.target.value)}
+                disabled={!canManageSettings}
+              />
 
               <div className="flex items-center justify-between pt-4 border-t border-border">
                 {isSaved && (
                   <span className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
                     <CheckCircle2 className="w-4 h-4" />
-                    Configuration updated successfully
+                    Settings logged in local audit store
                   </span>
                 )}
-                <Button type="submit" variant="primary" size="sm" className="ml-auto">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  className="ml-auto"
+                  disabled={!canManageSettings}
+                >
                   <Save className="w-4 h-4 mr-1.5" />
-                  Save Settings
+                  Save Changes
                 </Button>
               </div>
             </form>
           </Card>
 
-          {/* Database & Online Readiness Status */}
           <Card variant="bordered" padding="lg" className="bg-white">
             <h2 className="text-lg font-bold text-main-text mb-2 flex items-center gap-2">
               <Database className="w-5 h-5 text-forest-green" />
-              Database & Deployment Readiness
+              Backend &amp; Deployment Readiness
             </h2>
             <p className="text-xs text-secondary-text mb-4 leading-relaxed">
-              The project is running in local offline-first mode with in-memory & localStorage persistence.
-              Supabase schema migration definitions and RLS policies have been authored and are ready
-              to execute as soon as your cloud Supabase keys are configured.
+              Running in offline sandbox mode (`localStorage`). Complete PostgreSQL migration +
+              Row Level Security schema is authored in `supabase/migrations/20261028000000_initial_schema.sql`.
             </p>
-
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 rounded bg-surface-muted">
-                <span className="font-medium text-main-text">Local Storage Layer:</span>
-                <Badge variant="success">Operational</Badge>
+              <div className="flex items-center justify-between p-2.5 rounded bg-surface-muted">
+                <span className="font-medium text-main-text">Local Offline Store:</span>
+                <Badge variant="success">Active</Badge>
               </div>
-              <div className="flex items-center justify-between p-2 rounded bg-surface-muted">
-                <span className="font-medium text-main-text">Supabase Cloud Sync:</span>
-                <Badge variant="warning">Awaiting Online Keys</Badge>
+              <div className="flex items-center justify-between p-2.5 rounded bg-surface-muted">
+                <span className="font-medium text-main-text">Supabase Project Keys:</span>
+                <Badge variant="warning">Blocked Pending Credentials</Badge>
               </div>
-              <div className="flex items-center justify-between p-2 rounded bg-surface-muted">
-                <span className="font-medium text-main-text">Row Level Security (RLS):</span>
-                <Badge variant="success">Documented in SQL</Badge>
+              <div className="flex items-center justify-between p-2.5 rounded bg-surface-muted">
+                <span className="font-medium text-main-text">Online Payment Gateway:</span>
+                <Badge variant="danger">Disabled Pending Compliance</Badge>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Staff & Roles Registry */}
         <div className="lg:col-span-5 space-y-6">
           <Card variant="bordered" padding="lg" className="bg-white">
             <h2 className="text-lg font-bold text-main-text mb-3 flex items-center gap-2">
               <Users className="w-5 h-5 text-forest-green" />
-              Authorized Staff Roles
+              Role-Based Access Tiers
             </h2>
-            <p className="text-xs text-secondary-text mb-4">
-              Role-Based Access Control (RBAC) tiers governing editing, reviewing, and publishing.
-            </p>
-
             <div className="space-y-3">
               {MOCK_PROFILES.map((profile) => (
                 <div
@@ -130,13 +138,6 @@ export default function AdminSettingsPage() {
                   </Badge>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-4 p-3 rounded-lg bg-soft-sage/40 border border-soft-sage text-xs text-secondary-text">
-              <p className="font-semibold text-forest-green mb-1">Least Privilege Enforcement</p>
-              <p>
-                Staff cannot escalate their own roles. Only Super Administrators can alter permissions.
-              </p>
             </div>
           </Card>
         </div>

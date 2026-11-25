@@ -7,12 +7,10 @@ import {
   ArrowLeft,
   Calendar,
   ShieldCheck,
-  Share2,
-  BookOpen,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { PageHero, Section, Badge, Button } from "@/components/ui";
+import { PageHero, Section, Badge } from "@/components/ui";
 import { getStoryBySlug } from "@/lib/data-store";
 import { formatDate } from "@/lib/utils";
 

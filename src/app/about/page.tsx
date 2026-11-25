@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Heart,
   Shield,
-  Eye,
   Users,
   BookOpen,
   HandHeart,
@@ -19,16 +19,18 @@ import {
   FileText,
   Mail,
   Camera,
-  HeartHandshake,
 } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageHero, Section, Card, Button, Badge } from "@/components/ui";
+import { APPROVED_PUBLIC_GALLERY } from "@/lib/media-register";
+import { SITE_CONFIG } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "About Us — Caring for Every Child's Tomorrow",
   description:
-    "Learn about BORN FOUNDATION — our mission, vision, 8 core values, operating approach, child safeguarding commitment, and collaborative partnerships.",
+    "Learn about BORN FOUNDATION — supporting underprivileged children's welfare alongside women and child development in Bengaluru, guided by safety, dignity, and transparency.",
+  alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
@@ -65,7 +67,8 @@ export default function AboutPage() {
               <p>
                 <strong>BORN FOUNDATION</strong> is dedicated to supporting children from underprivileged
                 and underserved backgrounds by promoting access to essential needs, education, care,
-                personal development, and opportunities for a better future.
+                personal development, and opportunities for a better future, alongside encouraging the
+                wellbeing and empowerment of women and child development across Bengaluru communities.
               </p>
               <p>
                 We believe that every child has inherent worth, unique abilities, and the potential
@@ -309,9 +312,54 @@ export default function AboutPage() {
               <p className="text-base sm:text-lg font-bold text-forest-green font-[family-name:var(--font-heading)]">
                 Our story continues with every opportunity created, every child supported and every responsible step taken towards a better tomorrow.
               </p>
-              <p className="text-xs text-secondary-text mt-3 italic border-t border-border pt-3">
-                * Editorial note: Replace or expand this section with the foundation&apos;s verified founding history, the people who established it, important milestones, and actual work undertaken.
+              <p className="text-xs text-secondary-text mt-3 border-t border-border pt-3">
+                <strong>Historical Record Note:</strong> BORN FOUNDATION&apos;s verified founding history,
+                trustee details, and chronological milestones will be added once formal archival documents are confirmed.
               </p>
+            </div>
+          </div>
+        </Section>
+
+        {/* ═══ 5B. WOMEN & CHILD DEVELOPMENT FOCUS AREAS ═══ */}
+        <Section background="sage" padding="lg">
+          <div className="max-w-5xl mx-auto grid lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-6 space-y-5">
+              <Badge variant="default">Broader Focus</Badge>
+              <h2 className="text-3xl font-bold font-[family-name:var(--font-heading)] text-main-text">
+                Women &amp; Child Development Focus Areas
+              </h2>
+              <p className="text-secondary-text text-sm sm:text-base leading-relaxed">
+                Children thrive best when families and communities thrive. Alongside direct educational,
+                nutritional, creative, and developmental support for children, BORN FOUNDATION promotes
+                women&apos;s community participation and supportive neighbourhood networks.
+              </p>
+              <div className="grid grid-cols-2 gap-3 text-xs sm:text-sm">
+                {SITE_CONFIG.focusAreas.map((area) => (
+                  <Link
+                    key={area.id}
+                    href={`/programmes/${area.slug}`}
+                    className="p-3 rounded-xl bg-white border border-border hover:border-forest-green font-semibold text-main-text transition-colors"
+                  >
+                    {area.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-6">
+              <div className="rounded-2xl overflow-hidden border border-border bg-white shadow-sm">
+                <Image
+                  src={APPROVED_PUBLIC_GALLERY[0].mediumWebpSrc}
+                  alt={APPROVED_PUBLIC_GALLERY[0].altText}
+                  width={APPROVED_PUBLIC_GALLERY[0].width}
+                  height={APPROVED_PUBLIC_GALLERY[0].height}
+                  sizes="(max-width: 1023px) 100vw, 540px"
+                  loading="eager"
+                  className="w-full h-auto object-cover"
+                />
+                <div className="p-4 text-xs text-secondary-text">
+                  {APPROVED_PUBLIC_GALLERY[0].caption}
+                </div>
+              </div>
             </div>
           </div>
         </Section>

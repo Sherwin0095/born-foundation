@@ -1,35 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Mail,
   CheckCircle,
   Clock,
   Archive,
-  Search,
-  Filter,
-  UserCheck,
   MessageSquare,
 } from "lucide-react";
 import { Card, Button, Badge, Input, Select, Textarea } from "@/components/ui";
-import { getAllEnquiries, saveEnquiry } from "@/lib/data-store";
+import { saveEnquiry } from "@/lib/data-store";
+import { MOCK_ENQUIRIES } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
+import { useAuth } from "@/lib/auth-context";
 import { formatDate } from "@/lib/utils";
 import type { ContactEnquiry, EnquiryStatus } from "@/lib/types";
 
 export default function AdminEnquiriesPage() {
-  const [enquiries, setEnquiries] = useState<ContactEnquiry[]>([]);
+  const { user } = useAuth();
+  const rawEnquiries = useStoredData<ContactEnquiry[]>("enquiries", MOCK_ENQUIRIES);
+  const enquiries = useMemo(
+    () =>
+      [...rawEnquiries].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+    [rawEnquiries]
+  );
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedEnquiry, setSelectedEnquiry] = useState<ContactEnquiry | null>(null);
   const [internalNotes, setInternalNotes] = useState("");
-
-  const loadData = () => {
-    setEnquiries(getAllEnquiries());
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const filteredEnquiries = enquiries.filter((e) => {
     const matchesSearch =
@@ -54,9 +54,8 @@ export default function AdminEnquiriesPage() {
       internal_notes: internalNotes,
       updated_at: new Date().toISOString(),
     };
-    saveEnquiry(updated);
+    saveEnquiry(updated, user?.id);
     setSelectedEnquiry(updated);
-    loadData();
   };
 
   return (

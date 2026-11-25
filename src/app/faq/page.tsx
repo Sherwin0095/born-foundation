@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { PageHero, Section, Accordion } from "@/components/ui";
+import { PageHero, Section, Accordion, Button } from "@/components/ui";
 import { MOCK_FAQ } from "@/lib/mock-data";
 
 const ALL_CATEGORY = "All";
@@ -33,7 +34,7 @@ export default function FAQPage() {
       <main id="main-content">
         <PageHero
           title="Frequently Asked Questions"
-          subtitle="Find answers to common questions about Born Foundation, our programmes, volunteering, donations, and more."
+          subtitle="Clear answers about BORN FOUNDATION, children's welfare, women & child development, volunteering screening, and safeguarding."
           breadcrumbs={[
             { label: "Home", href: "/" },
             { label: "FAQ" },
@@ -42,14 +43,14 @@ export default function FAQPage() {
 
         <Section background="white">
           <div className="max-w-4xl mx-auto">
-            {/* Category Filter Tabs */}
             <div className="mb-10">
               <nav aria-label="FAQ categories" className="flex flex-wrap gap-2">
                 {categories.map((category) => (
                   <button
                     key={category}
+                    type="button"
                     onClick={() => setActiveCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    className={`min-h-10 px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
                       activeCategory === category
                         ? "bg-forest-green text-white"
                         : "bg-soft-sage text-main-text hover:bg-soft-sage-dark"
@@ -62,7 +63,6 @@ export default function FAQPage() {
               </nav>
             </div>
 
-            {/* FAQ Accordion */}
             {accordionItems.length > 0 ? (
               <Accordion items={accordionItems} />
             ) : (
@@ -73,21 +73,16 @@ export default function FAQPage() {
               </div>
             )}
 
-            {/* Contact CTA */}
-            <div className="mt-12 p-8 bg-soft-sage/50 rounded-xl text-center">
-              <h2 className="text-xl font-bold text-main-text mb-3">
-                Still Have Questions?
-              </h2>
-              <p className="text-secondary-text mb-6 max-w-lg mx-auto">
-                If you couldn&apos;t find the answer you were looking for, please don&apos;t
-                hesitate to get in touch. We&apos;re happy to help.
+            <div className="mt-12 p-8 bg-soft-sage/50 rounded-2xl border border-border text-center space-y-4">
+              <h2 className="text-xl font-bold text-main-text">Still Have Questions?</h2>
+              <p className="text-secondary-text text-sm sm:text-base max-w-lg mx-auto">
+                Reach out through our online contact form or telephone if your question isn&apos;t listed here.
               </p>
-              <a
-                href="/contact"
-                className="inline-flex items-center justify-center px-6 py-3 bg-forest-green text-white font-medium rounded-lg hover:bg-forest-green-light transition-colors"
-              >
-                Contact Us
-              </a>
+              <Link href="/contact">
+                <Button variant="primary" size="md">
+                  Contact BORN FOUNDATION
+                </Button>
+              </Link>
             </div>
           </div>
         </Section>

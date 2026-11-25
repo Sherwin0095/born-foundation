@@ -1,34 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Users,
   CheckCircle2,
   XCircle,
   Clock,
   ShieldCheck,
-  Search,
   Mail,
   Phone,
   MapPin,
 } from "lucide-react";
-import { Card, Button, Badge, Input, Select, Textarea } from "@/components/ui";
-import { getAllVolunteerApps, saveVolunteerApp } from "@/lib/data-store";
-import { formatDate } from "@/lib/utils";
+import { Card, Button, Badge, Textarea } from "@/components/ui";
+import { saveVolunteerApp } from "@/lib/data-store";
+import { MOCK_VOLUNTEER_APPS } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
+import { useAuth } from "@/lib/auth-context";
 import type { VolunteerApplication, VolunteerStatus } from "@/lib/types";
 
 export default function AdminVolunteersPage() {
-  const [apps, setApps] = useState<VolunteerApplication[]>([]);
+  const { user } = useAuth();
+  const rawApps = useStoredData<VolunteerApplication[]>("volunteer_apps", MOCK_VOLUNTEER_APPS);
+  const apps = useMemo(
+    () =>
+      [...rawApps].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      ),
+    [rawApps]
+  );
   const [selectedApp, setSelectedApp] = useState<VolunteerApplication | null>(null);
   const [internalNotes, setInternalNotes] = useState("");
-
-  const loadData = () => {
-    setApps(getAllVolunteerApps());
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const handleSelect = (app: VolunteerApplication) => {
     setSelectedApp(app);
@@ -43,9 +44,8 @@ export default function AdminVolunteersPage() {
       internal_notes: internalNotes,
       updated_at: new Date().toISOString(),
     };
-    saveVolunteerApp(updated);
+    saveVolunteerApp(updated, user?.id);
     setSelectedApp(updated);
-    loadData();
   };
 
   return (

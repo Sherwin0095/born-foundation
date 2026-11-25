@@ -1,5 +1,5 @@
 // ============================================================
-// Born Foundation — TypeScript Data Models
+// Born Foundation — TypeScript Data Models & Navigation Config
 // ============================================================
 
 export type UserRole =
@@ -87,6 +87,7 @@ export interface Programme {
   outcomes?: string;
   category: string;
   featured_image_url?: string;
+  is_focus_area_only?: boolean;
   status: ContentStatus;
   author_id: string;
   order_index: number;
@@ -123,10 +124,15 @@ export interface MediaAsset {
   url: string;
   alt_text?: string;
   caption?: string;
+  category?: string;
+  has_identifiable_children?: boolean;
+  safeguarding_risk?: "low" | "medium" | "high";
+  exif_stripped?: boolean;
   approval_status: MediaApprovalStatus;
   uploaded_by: string;
   approved_by?: string;
   is_public: boolean;
+  review_notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -168,6 +174,7 @@ export interface VolunteerApplication {
   availability?: string;
   experience?: string;
   motivation?: string;
+  safeguarding_acknowledged?: boolean;
   status: VolunteerStatus;
   reviewer_id?: string;
   internal_notes?: string;
@@ -231,42 +238,45 @@ export interface NavItem {
 export const PUBLIC_NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Programmes", href: "/programmes" },
+  { label: "Our Work", href: "/programmes" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Impact", href: "/impact" },
-  { label: "Stories", href: "/stories" },
-  { label: "Support", href: "/support" },
+  { label: "Get Involved", href: "/get-involved" },
   { label: "Contact", href: "/contact" },
 ];
 
 export const FOOTER_NAV = {
   about: [
     { label: "About Us", href: "/about" },
-    { label: "Our Programmes", href: "/programmes" },
+    { label: "Our Work & Focus Areas", href: "/programmes" },
+    { label: "Photo Gallery", href: "/gallery" },
     { label: "Impact & Transparency", href: "/impact" },
-    { label: "Stories", href: "/stories" },
+    { label: "Updates & Stories", href: "/stories" },
     { label: "FAQ", href: "/faq" },
   ],
   support: [
-    { label: "Donate", href: "/support" },
-    { label: "Volunteer", href: "/support#volunteer" },
-    { label: "Partner With Us", href: "/support#partnerships" },
-    { label: "Contact", href: "/contact" },
+    { label: "Get Involved", href: "/get-involved" },
+    { label: "Support Our Work", href: "/support" },
+    { label: "Volunteer Screening", href: "/get-involved#volunteer-form" },
+    { label: "Partnerships & CSR", href: "/get-involved#partnerships" },
+    { label: "Contact Us", href: "/contact" },
   ],
   legal: [
+    { label: "Child Safeguarding Policy", href: "/safeguarding" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
-    { label: "Safeguarding Policy", href: "/safeguarding" },
-    { label: "Accessibility", href: "/accessibility" },
+    { label: "Accessibility Statement", href: "/accessibility" },
   ],
 };
 
-// ---- Programme Categories ----
+// ---- Focus & Programme Categories (Aligned with Section 11) ----
 export const PROGRAMME_CATEGORIES = [
   { value: "education", label: "Education & Learning" },
-  { value: "nutrition", label: "Nutrition & Essential Needs" },
-  { value: "care", label: "Care & Wellbeing" },
-  { value: "skills", label: "Skills & Development" },
-  { value: "community", label: "Community Support" },
+  { value: "nutrition", label: "Nutrition & Wellbeing" },
+  { value: "child-development", label: "Child Development" },
+  { value: "cultural", label: "Cultural & Recreational" },
+  { value: "experiences", label: "Educational Experiences" },
+  { value: "women-community", label: "Women & Community" },
 ] as const;
 
 // ---- FAQ Data ----
@@ -278,10 +288,10 @@ export interface FAQItem {
 
 export const FAQ_CATEGORIES = [
   "About the Foundation",
-  "Programmes",
-  "Donations",
-  "Volunteering",
-  "Partnerships",
-  "Transparency",
-  "Contact",
+  "Programmes & Focus Areas",
+  "Women & Child Development",
+  "Donations & Support",
+  "Volunteering & Screening",
+  "Safeguarding & Privacy",
+  "Contact & Transparency",
 ] as const;

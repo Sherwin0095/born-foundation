@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Heart, Lock, Mail, AlertCircle, Shield, CheckCircle } from "lucide-react";
+import { Heart, Lock, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { Card, Input, Button } from "@/components/ui";
 

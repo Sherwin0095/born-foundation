@@ -2,5 +2,16 @@
 node_modules/
 .next/
 out/
+build/
 *.tsbuildinfo
 next-env.d.ts
+
+# Private source archives, unapproved child imagery & internal media pre-review assets
+.private/
+*.zip
+
+# Test artifacts & temporary browser output
+playwright-report/
+test-results/
+blobs/
+logs/

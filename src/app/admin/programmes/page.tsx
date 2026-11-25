@@ -1,25 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import {
-  BookOpen,
   Plus,
   Edit,
-  Trash2,
   CheckCircle,
-  Eye,
   Archive,
-  ArrowRight,
-  Shield,
 } from "lucide-react";
 import { Card, Button, Badge, Input, Textarea, Select } from "@/components/ui";
-import { getAllProgrammes, saveProgramme } from "@/lib/data-store";
+import { saveProgramme } from "@/lib/data-store";
+import { MOCK_PROGRAMMES } from "@/lib/mock-data";
+import { useStoredData } from "@/lib/use-stored-data";
 import { useAuth } from "@/lib/auth-context";
-import type { Programme, ContentStatus } from "@/lib/types";
+import { PROGRAMME_CATEGORIES, type Programme, type ContentStatus } from "@/lib/types";
 
 export default function AdminProgrammesPage() {
-  const { user, hasPermission } = useAuth();
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
+  const { user } = useAuth();
+  const rawProgrammes = useStoredData<Programme[]>("programmes", MOCK_PROGRAMMES);
+  const programmes = useMemo(
+    () => [...rawProgrammes].sort((a, b) => a.order_index - b.order_index),
+    [rawProgrammes]
+  );
   const [editingProg, setEditingProg] = useState<Programme | null>(null);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -34,14 +35,6 @@ export default function AdminProgrammesPage() {
     outcomes: "",
     status: "draft" as ContentStatus,
   });
-
-  const loadData = () => {
-    setProgrammes(getAllProgrammes());
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const handleEdit = (prog: Programme) => {
     setEditingProg(prog);
@@ -80,15 +73,13 @@ export default function AdminProgrammesPage() {
       updated_at: new Date().toISOString(),
     };
 
-    saveProgramme(progToSave);
+    saveProgramme(progToSave, user?.id);
     setIsCreating(false);
     setEditingProg(null);
-    loadData();
   };
 
   const handleStatusChange = (prog: Programme, newStatus: ContentStatus) => {
-    saveProgramme({ ...prog, status: newStatus });
-    loadData();
+    saveProgramme({ ...prog, status: newStatus }, user?.id);
   };
 
   return (
@@ -156,24 +147,20 @@ export default function AdminProgrammesPage() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <Select
-                label="Programme Category"
-                options={[
-                  { value: "education", label: "Education & Learning" },
-                  { value: "nutrition", label: "Nutrition & Essential Needs" },
-                  { value: "care", label: "Care & Wellbeing" },
-                  { value: "skills", label: "Skills & Development" },
-                  { value: "community", label: "Community Support" },
-                ]}
+                label="Focus Area Category"
+                options={PROGRAMME_CATEGORIES.map((c) => ({ value: c.value, label: c.label }))}
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
               />
 
               <Select
-                label="Publication Status"
+                label="Publication Workflow Status"
                 options={[
                   { value: "draft", label: "Draft (Internal Only)" },
                   { value: "submitted", label: "Submitted for Review" },
-                  { value: "approved", label: "Approved by Reviewer" },
+                  { value: "in_review", label: "In Review" },
+                  { value: "changes_requested", label: "Changes Requested" },
+                  { value: "approved", label: "Approved" },
                   { value: "published", label: "Published (Live on Site)" },
                   { value: "archived", label: "Archived" },
                 ]}

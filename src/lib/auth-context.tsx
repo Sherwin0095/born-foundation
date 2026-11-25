@@ -1,12 +1,12 @@
 // ============================================================
 // Born Foundation — Offline Auth Context
-// Simulates authentication for offline development.
+// Uses useSyncExternalStore for hydration-safe session reading.
 // Will be replaced by Supabase Auth when online.
 // ============================================================
 
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useCallback, useSyncExternalStore } from "react";
 import type { Profile, UserRole } from "./types";
 import { MOCK_PROFILES } from "./mock-data";
 
@@ -59,75 +59,97 @@ const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_STORAGE_KEY = "born_foundation_auth";
+const AUTH_CHANGE_EVENT = "bf-auth-store-change";
+
+let cachedAuthString: string | null | undefined = undefined;
+let cachedAuthUser: Profile | null = null;
+
+function subscribeAuth(callback: () => void) {
+  if (typeof window === "undefined") return () => {};
+  const handler = () => {
+    cachedAuthString = undefined;
+    callback();
+  };
+  window.addEventListener("storage", handler);
+  window.addEventListener(AUTH_CHANGE_EVENT, handler);
+  return () => {
+    window.removeEventListener("storage", handler);
+    window.removeEventListener(AUTH_CHANGE_EVENT, handler);
+  };
+}
+
+function getAuthSnapshot(): Profile | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw === cachedAuthString) return cachedAuthUser;
+    cachedAuthString = raw;
+    cachedAuthUser = raw ? (JSON.parse(raw) as Profile) : null;
+    return cachedAuthUser;
+  } catch {
+    return null;
+  }
+}
+
+function getServerAuthSnapshot(): Profile | null {
+  return null;
+}
+
+const subscribeClientHydration = () => () => {};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
-  });
+  const isClient = useSyncExternalStore(
+    subscribeClientHydration,
+    () => true,
+    () => false
+  );
+  const user = useSyncExternalStore(subscribeAuth, getAuthSnapshot, getServerAuthSnapshot);
 
-  useEffect(() => {
-    // Check for stored auth session
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        const user = JSON.parse(stored) as Profile;
-        setState({ user, isLoading: false, isAuthenticated: true });
-      } else {
-        setState((s) => ({ ...s, isLoading: false }));
-      }
-    } catch {
-      setState((s) => ({ ...s, isLoading: false }));
-    }
-  }, []);
+  const isLoading = !isClient;
+  const isAuthenticated = Boolean(user);
 
   const login = useCallback(async (email: string, password: string) => {
-    // Offline mode: accept any password for mock users
     const profile = MOCK_PROFILES.find(
       (p) => p.email.toLowerCase() === email.toLowerCase() && p.is_active
     );
 
-    if (!profile) {
-      return { success: false, error: "Invalid email or password." };
-    }
-
-    // In offline mode, accept password "admin123" for all mock users
-    if (password !== "admin123") {
+    if (!profile || password !== "admin123") {
       return { success: false, error: "Invalid email or password." };
     }
 
     localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(profile));
-    setState({ user: profile, isLoading: false, isAuthenticated: true });
+    cachedAuthString = undefined;
+    window.dispatchEvent(new CustomEvent(AUTH_CHANGE_EVENT));
     return { success: true };
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(AUTH_STORAGE_KEY);
-    setState({ user: null, isLoading: false, isAuthenticated: false });
+    cachedAuthString = undefined;
+    window.dispatchEvent(new CustomEvent(AUTH_CHANGE_EVENT));
   }, []);
 
   const hasRole = useCallback(
     (roles: UserRole | UserRole[]) => {
-      if (!state.user) return false;
+      if (!user) return false;
       const roleList = Array.isArray(roles) ? roles : [roles];
-      return roleList.includes(state.user.role);
+      return roleList.includes(user.role);
     },
-    [state.user]
+    [user]
   );
 
   const hasPermission = useCallback(
     (permission: string) => {
-      if (!state.user) return false;
-      const permissions = ROLE_PERMISSIONS[state.user.role] || [];
+      if (!user) return false;
+      const permissions = ROLE_PERMISSIONS[user.role] || [];
       return permissions.includes(permission);
     },
-    [state.user]
+    [user]
   );
 
   return (
     <AuthContext.Provider
-      value={{ ...state, login, logout, hasRole, hasPermission }}
+      value={{ user, isLoading, isAuthenticated, login, logout, hasRole, hasPermission }}
     >
       {children}
     </AuthContext.Provider>
